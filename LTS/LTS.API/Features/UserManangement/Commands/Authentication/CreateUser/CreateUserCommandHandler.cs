@@ -4,7 +4,7 @@ using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace LTS.API.Domain.Features.UserManangement.Commands.Authentication.CreateUser
+namespace LTS.API.Features.UserManangement.Commands.Authentication.CreateUser
 {
     public class CreateUserCommandHandler: IRequestHandler<CreateUserCommand, string>
     {

@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace LTS.API.Domain.Features.UserManangement.Queries.GetUsers
+namespace LTS.API.Features.UserManangement.Queries.GetUsers
 {
     public class GetAllUsersHandler : IRequestHandler<GetAllUserQuery, List<UserGetDto>>
     {
