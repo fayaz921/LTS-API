@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Queries.GetUsers
 {
-    public class GetAllUsersHandler : IRequestHandler<GetAllUserQuery, List<UserGetDto>>
+    public class GetAllUsersHandler : IRequestHandler<GetAllUserQuery, List<GetUserDto>>
     {
         private readonly AppDbContext _context;
         public GetAllUsersHandler(AppDbContext context)
         {
             _context = context;
         }
-        public async Task<List<UserGetDto>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
+        public async Task<List<GetUserDto>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
         {
             return await _context.Users
                  .Where(u => u.IsActive)
-                 .Select(u => new UserGetDto(
+                 .Select(u => new GetUserDto(
                      u.UserId,
                      u.Name,
                      u.Email,
