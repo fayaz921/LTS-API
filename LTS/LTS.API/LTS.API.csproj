@@ -34,7 +34,6 @@
     <Folder Include="Common\Response\" />
     <Folder Include="Features\" />
     <Folder Include="Infrastructure\BackgroundJobs\" />
-    <Folder Include="Infrastructure\Services\Interfaces\" />
   </ItemGroup>
 
 </Project>
