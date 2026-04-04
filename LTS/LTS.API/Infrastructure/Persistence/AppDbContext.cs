@@ -19,6 +19,7 @@ namespace LTS.API.Infrastructure.Persistence
         public DbSet<Bench> Benches => Set<Bench>();
         public DbSet<CaseDocument> CaseDocuments => Set<CaseDocument>();
         public DbSet<User> Users => Set<User>();
+        public DbSet<UserCredential> UserCredentials => Set<UserCredential>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
