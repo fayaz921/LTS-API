@@ -8,7 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(x => x.Id);
+        builder.HasKey(x => x.UserId);
 
         builder.Property(x => x.Name)
             .IsRequired()
@@ -20,9 +20,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasIndex(x => x.Email)
             .IsUnique();
-
-        builder.Property(x => x.PasswordHash)
-            .IsRequired();
 
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
