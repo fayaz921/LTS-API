@@ -1,4 +1,5 @@
 using LTS.API.Infrastructure.Persistence;
+using LTS.API.Infrastructure.Persistence.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,5 +21,5 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-
+await app.ApplyMigrationsAsync();
 app.Run();
