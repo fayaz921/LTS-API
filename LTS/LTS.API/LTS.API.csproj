@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
+    <PackageReference Include="CloudinaryDotNet" Version="1.28.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
     <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
     <PackageReference Include="MailKit" Version="4.15.1" />
@@ -33,6 +34,8 @@
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Middleware\" />
     <Folder Include="Common\Response\" />
+    <Folder Include="Features\CaseDocument\Queries\GetDocumentByCase\" />
+    <Folder Include="Features\CaseDocument\Queries\GetDocumentById\" />
     <Folder Include="Infrastructure\BackgroundJobs\" />
   </ItemGroup>
 

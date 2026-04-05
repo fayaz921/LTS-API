@@ -1,8 +1,8 @@
 using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Persistence.Extensions;
 using LTS.API.Infrastructure.Services;
-using LTS.API.Infrastructure.Services.Interfaces;
-using LTS.API.Infrastructure.Settings;
+using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
+using LTS.API.Infrastructure.Services.Email;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -20,7 +20,10 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Progr
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+//cloudinary settings
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
 
 var app = builder.Build();
 

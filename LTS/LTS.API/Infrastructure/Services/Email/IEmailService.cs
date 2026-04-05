@@ -1,4 +1,4 @@
-﻿namespace LTS.API.Infrastructure.Services.Interfaces
+﻿namespace LTS.API.Infrastructure.Services.Email
 {
     public interface IEmailService
     {
