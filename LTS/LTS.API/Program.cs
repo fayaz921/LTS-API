@@ -8,6 +8,8 @@ using LTS.API.Infrastructure.Services.Extensions;
 using LTS.API.Infrastructure.Services.Interfaces;
 using LTS.API.Infrastructure.Settings;
 using MediatR;
+using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
+using LTS.API.Infrastructure.Services.Email;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Serilog;
@@ -35,8 +37,11 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavi
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<IFileStorageService, FileStorageService>();
-builder.Host.AddSerilog(builder.Configuration);
+//cloudinary settings
+builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
