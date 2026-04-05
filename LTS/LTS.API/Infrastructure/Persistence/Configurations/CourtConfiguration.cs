@@ -12,7 +12,7 @@ public class CourtConfiguration : IEntityTypeConfiguration<Court>
 
         builder.Property(x => x.CourtName)
             .IsRequired()
-            .HasMaxLength(200);
+            .HasMaxLength(100);
 
         builder.Property(x => x.AddressContact)
             .HasMaxLength(500);
