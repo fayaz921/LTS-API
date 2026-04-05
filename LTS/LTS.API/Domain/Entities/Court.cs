@@ -1,14 +1,11 @@
 ﻿namespace LTS.API.Domain.Entities
 {
-    public class Court
+    public class Court : BaseEntity
     {
-        public Guid Id { get; set; }
         public string CourtName { get; set; } = string.Empty;
         public string? AddressContact { get; set; }
-        public bool IsActive { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public bool IsActive { get; set; } = true;
 
-        // Navigation
         public ICollection<Case> Cases { get; set; } = new List<Case>();
     }
 }
