@@ -2,17 +2,11 @@ using FluentValidation;
 using LTS.API.Common.Behaviors;
 using LTS.API.Common.Middleware;
 using LTS.API.Infrastructure.Persistence;
-using LTS.API.Infrastructure.Persistence.Extensions;
-using LTS.API.Infrastructure.Services;
-using LTS.API.Infrastructure.Services.Extensions;
-using LTS.API.Infrastructure.Services.Interfaces;
-using LTS.API.Infrastructure.Settings;
-using MediatR;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using LTS.API.Infrastructure.Services.Email;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
