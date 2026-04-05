@@ -1,11 +1,9 @@
-﻿using LTS.API.Infrastructure.Services.Interfaces;
-using LTS.API.Infrastructure.Settings;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
 
-namespace LTS.API.Infrastructure.Services
+namespace LTS.API.Infrastructure.Services.Email
 {
     public class EmailService : IEmailService
     {
