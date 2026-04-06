@@ -16,7 +16,7 @@ namespace LTS.API.Features.UserManangement.Queries.GetUsers
             return await _context.Users
                  .Where(u => u.IsActive)
                  .Select(u => new GetUserDto(
-                     u.UserId,
+                     u.Id ,
                      u.Name,
                      u.Email,
                      u.Role.ToString(),
