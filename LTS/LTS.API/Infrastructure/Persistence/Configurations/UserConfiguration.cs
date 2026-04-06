@@ -8,7 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(x => x.UserId);
+        builder.HasKey(x => x.Id);
 
         builder.Property(x => x.Name)
             .IsRequired()
@@ -23,6 +23,28 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
+
+
+        builder.Property(x => x.PasswordHash)
+          .IsRequired();
+
+        builder.Property(x => x.Role)
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder.Property(x => x.Otp)
+            .HasMaxLength(10);
+
+        // Base fields
+        builder.Property(x => x.CreatedBy)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(x => x.UpdatedBy)
+            .HasMaxLength(100);
+
+       
     }
 }
 

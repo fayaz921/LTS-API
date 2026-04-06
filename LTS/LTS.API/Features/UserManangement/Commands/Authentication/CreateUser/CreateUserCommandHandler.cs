@@ -26,24 +26,21 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.CreateUser
 
             var user = new User
             {
-                UserId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
                 Name = request.FullName,
                 Email = request.Email,
                 Role = UserRole.User,
                 IsActive = false,
-                CreatedAt = DateTime.UtcNow
-            };
-            var credential = new UserCredential
-            {
-                UserCredentialId = Guid.NewGuid(),
-                UserId = user.UserId,
+                CreatedAt = DateTime.UtcNow,
                 PasswordHash = 779797897987.GetHashCode().ToString().Select(c => (byte)c).ToArray() // Placeholder for actual password hashing
+                
             };
 
-            await _context.Users.AddAsync(user, cancellationToken);
-            await _context.UserCredentials.AddAsync(credential, cancellationToken);
-            await _context.SaveChangesAsync(cancellationToken);
-            return "User Created";
+
+            //    await _context.Users.AddAsync(user, cancellationToken);
+            //    await _context.UserCredentials.AddAsync(credential, cancellationToken);
+            //    await _context.SaveChangesAsync(cancellationToken);
+                return "User Created";
         }
     }
 }
