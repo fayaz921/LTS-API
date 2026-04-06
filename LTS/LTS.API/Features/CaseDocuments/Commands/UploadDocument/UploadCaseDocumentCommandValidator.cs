@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace LTS.API.Features.CaseDocument.Commands.UploadDocument
+namespace LTS.API.Features.CaseDocuments.Commands.UploadDocument
 {
     public class UploadCaseDocumentCommandValidator:AbstractValidator<UploadCaseDocumentCommand>
     {
