@@ -2,9 +2,10 @@
 
 namespace LTS.API.Domain.Entities
 {
-    public class Organization:BaseEntity
+    public class Organization
     {
-        public string Name { get; set; } = string.Empty;
+        public Guid Id { get; set; }
+        public string OrganizationName { get; set; } = string.Empty;
         public string Slug { get; set; } = string.Empty;
         public SubscriptionPlan Plan { get; set; } = SubscriptionPlan.Basic;
         public DateTime StartDate { get; set; }
@@ -12,7 +13,10 @@ namespace LTS.API.Domain.Entities
         public bool IsActive { get; set; }
         public int MaxUsers { get; set; } = 5;
 
-        // Navigation
+        // Audit fields manually
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+
         public ICollection<User> Users { get; set; } = new List<User>();
 
 

@@ -1,6 +1,6 @@
 ﻿namespace LTS.API.Domain.Entities
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
         public Guid Id { get; set; }
         public Guid OrganizationId { get; set; }
