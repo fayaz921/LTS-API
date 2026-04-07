@@ -4,6 +4,8 @@ using LTS.API.Common.Middleware;
 using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using LTS.API.Infrastructure.Services.Email;
+using LTS.API.Infrastructure.Services.Extensions;
+using LTS.API.Infrastructure.Services.JWT;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -19,7 +21,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 // MediatR register karna lazmi hai
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-
+//JWT Authentication
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddScoped<ITokenService, TokenService>();
 // FluentValidation
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
@@ -50,6 +54,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 //await app.ApplyMigrationsAsync();
