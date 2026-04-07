@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace LTS.API.Features.CaseDocument.Commands.DeleteDocument
+namespace LTS.API.Features.CaseDocuments.Commands.DeleteDocument
 {
     public class DeleteCaseDocumentCommandValidator:AbstractValidator<DeleteCaseDocumentCommand>
     {
