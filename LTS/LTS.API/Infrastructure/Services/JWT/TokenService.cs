@@ -15,7 +15,7 @@ namespace LTS.API.Infrastructure.Services.JWT
         {
             var claims = new List<Claim>
         {
-            new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name,           user.Name),
             new(ClaimTypes.Email,          user.Email),
             new(ClaimTypes.Role,           user.Role.ToString())
