@@ -10,7 +10,7 @@ namespace LTS.API.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Name)
+            builder.Property(x => x.OrganizationName)
                 .IsRequired()
                 .HasMaxLength(100);
 

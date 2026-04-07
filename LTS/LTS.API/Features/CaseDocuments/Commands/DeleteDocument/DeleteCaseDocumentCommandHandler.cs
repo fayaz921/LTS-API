@@ -3,6 +3,7 @@ using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace LTS.API.Features.CaseDocuments.Commands.DeleteDocument
 {
@@ -22,16 +23,16 @@ namespace LTS.API.Features.CaseDocuments.Commands.DeleteDocument
         {
             var document = context.CaseDocuments.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken).Result;
             if (document is null)
-               return ApiResponse<string>.Fail($"Document with Id {request.Id} not found.", Domain.Enums.ResponseType.NotFound);
+               return ApiResponse<string>.Fail($"Document with Id {request.Id} not found.", HttpStatusCode.NotFound);
             if (!string.IsNullOrEmpty(document.PublicId))
             {
                 var cloudDeleted=await cloudinaryService.DeleteFileAsync(document.PublicId,document.FileType);
                 if (!cloudDeleted)
-                     return ApiResponse<string>.Fail("Failed to delete the document from cloud storage.", Domain.Enums.ResponseType.ServerError);
+                     return ApiResponse<string>.Fail("Failed to delete the document from cloud storage.", HttpStatusCode.InternalServerError);
             }
             context.CaseDocuments.Remove(document);
             await context.SaveChangesAsync(cancellationToken);
-            return ApiResponse<string>.Ok("Document deleted successfully.");
+            return ApiResponse<string>.Ok(default!,"Document deleted successfully.");
         }
     }
 }

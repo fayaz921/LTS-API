@@ -24,7 +24,7 @@ namespace LTS.API.Features.CaseDocuments.Commands.UploadDocument
             var caseDocument= request.Map(uploadResult);
             context.CaseDocuments.Add(caseDocument);
             await context.SaveChangesAsync(cancellationToken);
-            return ApiResponse<string>.Ok("File Uploaded SuccessFully");
+            return ApiResponse<string>.Ok(default!,"File Uploaded SuccessFully");
         }
     }
 }

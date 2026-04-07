@@ -5,6 +5,7 @@ using LTS.API.Features.CaseDocuments.Mappers;
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 
 namespace LTS.API.Features.CaseDocuments.Queries.GetDocumentById
 {
@@ -21,7 +22,7 @@ namespace LTS.API.Features.CaseDocuments.Queries.GetDocumentById
             var document = await context.CaseDocuments.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (document == null)
             {
-                return ApiResponse<GetCaseDocument>.Fail("Document not found",Domain.Enums.ResponseType.NotFound);
+                return ApiResponse<GetCaseDocument>.Fail("Document not found",HttpStatusCode.NotFound);
             }
             return ApiResponse<GetCaseDocument>.Ok(document.Map(),"Success");
         }
