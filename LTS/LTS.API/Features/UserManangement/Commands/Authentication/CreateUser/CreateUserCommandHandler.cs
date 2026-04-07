@@ -17,7 +17,7 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.CreateUser
 
         public async Task<string> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var emailExists = await _context.Users.AnyAsync(u => u.Email == request.Email, cancellationToken);
+            var emailExists = await _context.Users.AnyAsync(u => u.Email == request.Email,cancellationToken);
 
             if (emailExists)
             {
@@ -32,7 +32,7 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.CreateUser
                 Role = UserRole.User,
                 IsActive = false,
                 CreatedAt = DateTime.UtcNow,
-                PasswordHash = 779797897987.GetHashCode().ToString().Select(c => (byte)c).ToArray() // Placeholder for actual password hashing
+               
                 
             };
 

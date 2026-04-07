@@ -37,6 +37,7 @@
     <Folder Include="Common\Response\" />
     <Folder Include="Features\CaseDocument\Queries\GetDocumentByCase\" />
     <Folder Include="Features\CaseDocument\Queries\GetDocumentById\" />
+    <Folder Include="Features\UserManangement\Mapping\" />
     <Folder Include="Infrastructure\BackgroundJobs\" />
   </ItemGroup>
 

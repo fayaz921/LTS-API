@@ -32,12 +32,12 @@ namespace LTS.API.Infrastructure.Persistence.Configurations
             builder.Property(x => x.EndDate)
                 .IsRequired();
 
-            builder.Property(x => x.CreatedBy)
-         .IsRequired()
+         //   builder.Property(x => x.CreatedBy)
+         //.IsRequired()
 
-         .HasMaxLength(100);
-            builder.Property(x => x.UpdatedBy)
-                .HasMaxLength(100);
+         //.HasMaxLength(100);
+         //   builder.Property(x => x.UpdatedBy)
+         //       .HasMaxLength(100);
 
             // Relationship
             builder.HasMany(x => x.Users)
