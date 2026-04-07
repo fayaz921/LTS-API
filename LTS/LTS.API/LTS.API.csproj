@@ -35,8 +35,6 @@
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Middleware\" />
     <Folder Include="Common\Response\" />
-    <Folder Include="Features\CaseDocumentFeature\Queries\GetDocumentByCase\" />
-    <Folder Include="Features\CaseDocumentFeature\Queries\GetDocumentById\" />
     <Folder Include="Infrastructure\BackgroundJobs\" />
   </ItemGroup>
 
