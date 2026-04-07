@@ -3,7 +3,7 @@ using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace LTS.API.Features.CaseDocument.Commands.DeleteDocument
+namespace LTS.API.Features.CaseDocumentFeature.Commands.DeleteDocument
 {
     public class DeleteCaseDocumentCommandHandler : IRequestHandler<DeleteCaseDocumentCommand, string>
     {

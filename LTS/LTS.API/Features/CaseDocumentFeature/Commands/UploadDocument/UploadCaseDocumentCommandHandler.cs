@@ -2,7 +2,7 @@
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using MediatR;
 
-namespace LTS.API.Features.CaseDocument.Commands.UploadDocument
+namespace LTS.API.Features.CaseDocumentFeature.Commands.UploadDocument
 {
     public class UploadCaseDocumentCommandHandler:IRequestHandler<UploadCaseDocumentCommand, string>
     {
