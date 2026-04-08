@@ -6,7 +6,7 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.CreateUser
     {
         public CreateUserCommandValidator()
         {
-            RuleFor(x => x.FullName)
+            RuleFor(x => x.OwnerName)
             .NotEmpty().WithMessage("Name is  required ");
         }
     }

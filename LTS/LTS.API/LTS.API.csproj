@@ -35,6 +35,8 @@
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Middleware\" />
     <Folder Include="Common\Response\" />
+    <Folder Include="Features\UserManangement\DTOs\" />
+    <Folder Include="Features\UserManangement\Mappers\" />
     <Folder Include="Infrastructure\BackgroundJobs\" />
   </ItemGroup>
 
