@@ -1,6 +1,9 @@
 using FluentValidation;
+using Hangfire;
+using Hangfire.MemoryStorage;
 using LTS.API.Common.Behaviors;
 using LTS.API.Common.Middleware;
+using LTS.API.Infrastructure.BackgroundJobs;
 using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
@@ -36,11 +39,17 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavi
 // Email Settings
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<HearingAlertJob>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 //cloudinary settings
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddHangfire(config =>
+    config.UseSimpleAssemblyNameTypeSerializer()
+          .UseRecommendedSerializerSettings()
+          .UseMemoryStorage());
+builder.Services.AddHangfireServer();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
@@ -61,4 +70,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 //await app.ApplyMigrationsAsync();
+app.UseHangfireDashboard();
+RecurringJob.AddOrUpdate<HearingAlertJob>(
+    "hearing-alert-job",
+    job => job.ExecuteAsync(),
+    "0 8 * * *");
 app.Run();
