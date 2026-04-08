@@ -1,12 +1,14 @@
 using FluentValidation;
 using LTS.API.Common.Behaviors;
 using LTS.API.Common.Middleware;
+using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using LTS.API.Infrastructure.Services.Email;
 using LTS.API.Infrastructure.Services.Extensions;
 using LTS.API.Infrastructure.Services.JWT;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 
@@ -39,6 +41,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 

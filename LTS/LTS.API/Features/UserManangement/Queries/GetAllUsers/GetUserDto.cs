@@ -1,4 +1,4 @@
-﻿namespace LTS.API.Features.UserManangement.Queries.GetUsers
+﻿namespace LTS.API.Features.UserManangement.Queries.GetAllUsers
 {
     public record GetUserDto(Guid UserId,
         string Name,

@@ -20,12 +20,6 @@ namespace LTS.API.Domain.Entities
         public ICollection<User> Users { get; set; } = new List<User>();
 
 
-        public int GetMaxUsers() => Plan switch
-        {
-            SubscriptionPlan.Free => 2,
-            SubscriptionPlan.Basic => 5,
-            SubscriptionPlan.Pro => 20,
-            SubscriptionPlan.Enterprise => 100, _ => 5
-        };
+       
     }
 }
