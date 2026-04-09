@@ -32,5 +32,6 @@ namespace LTS.API.Features.UserManangement.Controller
             var response = await _mediator.Send(loginUserCommand);
             return StatusCode((int)response.Status, response);
         }
+        
     }
 }

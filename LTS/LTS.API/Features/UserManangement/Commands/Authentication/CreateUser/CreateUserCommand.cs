@@ -4,7 +4,8 @@ using MediatR;
 
 namespace LTS.API.Features.UserManangement.Commands.Authentication.CreateUser
 {
-    public record CreateUserCommand(string OrganizationName,
+    public record CreateUserCommand(
+     string OrganizationName,
     SubscriptionPlan SubscriptionPlan,
     string OwnerName,
     string Email,

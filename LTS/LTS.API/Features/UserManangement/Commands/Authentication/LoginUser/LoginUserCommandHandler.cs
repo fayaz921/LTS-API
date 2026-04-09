@@ -21,16 +21,10 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
         {
             var user =await _appDbcontext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (user == null)
-            {
                 return ApiResponse<string>.Fail("User Not Found");
-            }
-
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
-
             if (result == PasswordVerificationResult.Failed)
-            {
                 return ApiResponse<string>.Fail("User Not Found");
-            }
             return ApiResponse<string>.Ok(default!,"Login Success");
         }
     }
