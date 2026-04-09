@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="LTS.API/LTS.API.csproj" />
+  <Project Path="LTS.Tests/LTS.Tests.csproj" Id="150d8ae9-6653-4d5b-8980-5b2b492f393e" />
 </Solution>
