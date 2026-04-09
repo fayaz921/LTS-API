@@ -9,6 +9,10 @@ namespace LTS.API.Infrastructure.BackgroundJobs
         public async Task ExecuteAsync()
         {
             var upcomingHearings = await mediator.Send(new GetUpComingHearingQuery());
+            if (upcomingHearings.Data == null)
+            {
+                return;
+            }
             foreach(var hearing in upcomingHearings.Data!)
             {
                 await mediator.Send(new SendHearingAlertCommand(hearing.CaseId));

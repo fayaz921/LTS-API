@@ -2,6 +2,7 @@
 using MailKit.Security;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using Serilog;
 
 namespace LTS.API.Infrastructure.Services.Email
 {
@@ -14,17 +15,25 @@ namespace LTS.API.Infrastructure.Services.Email
         }
         public async Task SendEmailAsync(string toEmail, string subject, string body)
         {
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
-            message.To.Add(new MailboxAddress("", toEmail));
-            message.Subject = subject;
-            message.Body = new TextPart("html") { Text = body };
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress(_emailSettings.FromName, _emailSettings.Username));
+                message.To.Add(new MailboxAddress("", toEmail));
+                message.Subject = subject;
+                message.Body = new TextPart("html") { Text = body };
 
-            using var client = new SmtpClient();
-            await client.ConnectAsync(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
-            await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
-            await client.SendAsync(message);
-            await client.DisconnectAsync(true);
+                using var client = new SmtpClient();
+                await client.ConnectAsync(_emailSettings.Host, _emailSettings.Port, SecureSocketOptions.StartTls);
+                await client.AuthenticateAsync(_emailSettings.Username, _emailSettings.Password);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to send email");
+            }
+
         }
     }
 }
