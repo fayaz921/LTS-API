@@ -1,29 +1,34 @@
-﻿using LTS.API.Infrastructure.Persistence;
-using MediatR;
+﻿using MediatR;
+using System.Net;
+using Microsoft.EntityFrameworkCore;
+using LTS.API.Common.Response;
+using LTS.API.Infrastructure.Persistence;
 
-namespace LTS.API.Features.Courts.Commands.DeleteCourt;
-
-public class DeleteCourtHandler : IRequestHandler<DeleteCourtCommand, bool>
+namespace LTS.API.Features.Courts.Commands.DeleteCourt
 {
-    private readonly AppDbContext _context;
-
-    public DeleteCourtHandler(AppDbContext context)
+    public class DeleteCourtHandler : IRequestHandler<DeleteCourtCommand, ApiResponse<string>>
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<bool> Handle(DeleteCourtCommand request, CancellationToken ct)
-    {
-        var court = await _context.Courts.FindAsync(request.CourtId);
+        public DeleteCourtHandler(AppDbContext context)
+        {
+            _context = context;
+        }
 
-        if (court == null)
-            return false;
+        public async Task<ApiResponse<string>> Handle(DeleteCourtCommand request, CancellationToken ct)
+        {
+            var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == request.Id, ct);
 
-        // Soft delete
-        court.IsActive = false;
+            if (court == null)
+                return ApiResponse<string>.Fail("Court not found", HttpStatusCode.NotFound);
 
-        await _context.SaveChangesAsync(ct);
+            court.IsActive = false;
 
-        return true;
+            var result = await _context.SaveChangesAsync(ct);
+
+            return result > 0
+                ? ApiResponse<string>.Ok(data: "Court updated successfully", message: "Success")
+                : ApiResponse<string>.Fail("Delete failed");
+        }
     }
 }

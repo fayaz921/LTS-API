@@ -1,16 +1,17 @@
 ﻿using FluentValidation;
 
-namespace LTS.API.Features.Courts.Commands.CreateCourt;
-
-public class CreateCourtValidator : AbstractValidator<CreateCourtCommand>
+namespace LTS.API.Features.Courts.Commands.CreateCourt
 {
-    public CreateCourtValidator()
+    public class CreateCourtValidator : AbstractValidator<CreateCourtCommand>
     {
-        RuleFor(x => x.CourtName)
-            .NotEmpty().WithMessage("Court name is required")
-            .MaximumLength(100).WithMessage("Max 100 characters allowed");
+        public CreateCourtValidator()
+        {
+            RuleFor(x => x.CourtName)
+                .NotEmpty().WithMessage("Court name is required")
+                .MaximumLength(100).WithMessage("Max 100 characters allowed");
 
-        RuleFor(x => x.AddressContact)
-            .MaximumLength(500);
+            RuleFor(x => x.AddressContact)
+                .MaximumLength(500);
+        }
     }
 }
