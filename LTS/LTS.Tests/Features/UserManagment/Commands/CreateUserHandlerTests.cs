@@ -32,8 +32,7 @@ public class CreateUserHandlerTests
     {
         // Arrange
         var context = GetInMemoryContext();
-        var passwordHasher = GetPasswordHasher();
-        var handler = new CreateUserCommandHandler(context, passwordHasher.Object);
+        var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
 
         var command = new CreateUserCommand(
             OrganizationName: "Test Org",
@@ -53,6 +52,7 @@ public class CreateUserHandlerTests
         var userInDb = await context.Users.FirstOrDefaultAsync(u => u.Email == "test@test.com");
         userInDb.Should().NotBeNull();
         userInDb!.Name.Should().Be("Test User");
+        userInDb.PasswordHash.Should().Be("hashed_password");
 
         var orgInDb = await context.Organizations.FirstOrDefaultAsync();
         orgInDb.Should().NotBeNull();
@@ -64,9 +64,7 @@ public class CreateUserHandlerTests
     {
         // Arrange
         var context = GetInMemoryContext();
-        var passwordHasher = GetPasswordHasher();
 
-        // seed existing user
         context.Users.Add(new User
         {
             Id = Guid.NewGuid(),
@@ -79,13 +77,13 @@ public class CreateUserHandlerTests
         });
         await context.SaveChangesAsync();
 
-        var handler = new CreateUserCommandHandler(context, passwordHasher.Object);
+        var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
 
         var command = new CreateUserCommand(
             OrganizationName: "Another Org",
             SubscriptionPlan: SubscriptionPlan.Free,
             OwnerName: "Another User",
-            Email: "test@test.com",
+            Email: "test@test.com",  // duplicate email
             Password: "Test@123"
         );
 
@@ -94,7 +92,14 @@ public class CreateUserHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.Message.Should().Be("Email already Exist");
+        result.Message.Should().Be("Email already exists"); // handler se match karta hai
+
+        // Verify no new user or org was added
+        var userCount = await context.Users.CountAsync();
+        userCount.Should().Be(1);
+
+        var orgCount = await context.Organizations.CountAsync();
+        orgCount.Should().Be(0);
     }
 
     [Fact]
@@ -102,8 +107,7 @@ public class CreateUserHandlerTests
     {
         // Arrange
         var context = GetInMemoryContext();
-        var passwordHasher = GetPasswordHasher();
-        var handler = new CreateUserCommandHandler(context, passwordHasher.Object);
+        var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
 
         var command = new CreateUserCommand(
             OrganizationName: "Pro Org",
@@ -114,10 +118,40 @@ public class CreateUserHandlerTests
         );
 
         // Act
-        await handler.Handle(command, CancellationToken.None);
+        var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
+        result.IsSuccess.Should().BeTrue();
+
         var org = await context.Organizations.FirstOrDefaultAsync();
+        org.Should().NotBeNull();
         org!.MaxUsers.Should().Be(20);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldLinkUserToOrganization_WhenCreated()
+    {
+        // Arrange
+        var context = GetInMemoryContext();
+        var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
+
+        var command = new CreateUserCommand(
+            OrganizationName: "Linked Org",
+            SubscriptionPlan: SubscriptionPlan.Free,
+            OwnerName: "Linked User",
+            Email: "linked@test.com",
+            Password: "Test@123"
+        );
+
+        // Act
+        await handler.Handle(command, CancellationToken.None);
+
+        // Assert — user ka OrganizationId, org ke Id se match karna chahiye
+        var org = await context.Organizations.FirstOrDefaultAsync();
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == "linked@test.com");
+
+        org.Should().NotBeNull();
+        user.Should().NotBeNull();
+        user!.OrganizationId.Should().Be(org!.Id);
     }
 }
