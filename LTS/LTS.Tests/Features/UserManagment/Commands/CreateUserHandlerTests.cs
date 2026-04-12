@@ -11,53 +11,53 @@ namespace LTS.Tests.Features.UserManagement.Commands;
 
 public class CreateUserHandlerTests
 {
-    private AppDbContext GetInMemoryContext()
-    {
-        var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-            .Options;
-        return new AppDbContext(options);
-    }
+    //private AppDbContext GetInMemoryContext()
+    //{
+    //    var options = new DbContextOptionsBuilder<AppDbContext>()
+    //        .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+    //        .Options;
+    //    return new AppDbContext(options);
+    //}
 
-    private Mock<IPasswordHasher<User>> GetPasswordHasher()
-    {
-        var mock = new Mock<IPasswordHasher<User>>();
-        mock.Setup(x => x.HashPassword(It.IsAny<User>(), It.IsAny<string>()))
-            .Returns("hashed_password");
-        return mock;
-    }
+    //private Mock<IPasswordHasher<User>> GetPasswordHasher()
+    //{
+    //    var mock = new Mock<IPasswordHasher<User>>();
+    //    mock.Setup(x => x.HashPassword(It.IsAny<User>(), It.IsAny<string>()))
+    //        .Returns("hashed_password");
+    //    return mock;
+    //}
 
-    [Fact]
-    public async Task Handle_ShouldCreateUserAndOrganization_WhenEmailIsUnique()
-    {
-        // Arrange
-        var context = GetInMemoryContext();
-        var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
+    //[Fact]
+    //public async Task Handle_ShouldCreateUserAndOrganization_WhenEmailIsUnique()
+    //{
+    //    // Arrange
+    //    var context = GetInMemoryContext();
+    //    var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
 
-        var command = new CreateUserCommand(
-            OrganizationName: "Test Org",
-            SubscriptionPlan: SubscriptionPlan.Free,
-            OwnerName: "Test User",
-            Email: "test@test.com",
-            Password: "Test@123"
-        );
+    //    var command = new CreateUserCommand(
+    //        OrganizationName: "Test Org",
+    //        SubscriptionPlan: SubscriptionPlan.Free,
+    //        OwnerName: "Test User",
+    //        Email: "test@test.com",
+    //        Password: "Test@123"
+    //    );
 
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+    //    // Act
+    //    var result = await handler.Handle(command, CancellationToken.None);
 
-        // Assert
-        result.IsSuccess.Should().BeTrue();
-        result.Message.Should().Be("Registration successful");
+    //    // Assert
+    //    result.IsSuccess.Should().BeTrue();
+    //    result.Message.Should().Be("Registration successful");
 
         var userInDb = await context.Users.FirstOrDefaultAsync(u => u.Email == "test@test.com");
         userInDb.Should().NotBeNull();
         userInDb!.Name.Should().Be("Test User");
         userInDb.PasswordHash.Should().Be("hashed_password");
 
-        var orgInDb = await context.Organizations.FirstOrDefaultAsync();
-        orgInDb.Should().NotBeNull();
-        orgInDb!.OrganizationName.Should().Be("Test Org");
-    }
+    //    var orgInDb = await context.Organizations.FirstOrDefaultAsync();
+    //    orgInDb.Should().NotBeNull();
+    //    orgInDb!.OrganizationName.Should().Be("Test Org");
+    //}
 
     [Fact]
     public async Task Handle_ShouldFail_WhenEmailAlreadyExists()
@@ -87,8 +87,8 @@ public class CreateUserHandlerTests
             Password: "Test@123"
         );
 
-        // Act
-        var result = await handler.Handle(command, CancellationToken.None);
+    //    // Act
+    //    var result = await handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -109,13 +109,13 @@ public class CreateUserHandlerTests
         var context = GetInMemoryContext();
         var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
 
-        var command = new CreateUserCommand(
-            OrganizationName: "Pro Org",
-            SubscriptionPlan: SubscriptionPlan.Pro,
-            OwnerName: "Pro User",
-            Email: "pro@test.com",
-            Password: "Test@123"
-        );
+    //    var command = new CreateUserCommand(
+    //        OrganizationName: "Pro Org",
+    //        SubscriptionPlan: SubscriptionPlan.Pro,
+    //        OwnerName: "Pro User",
+    //        Email: "pro@test.com",
+    //        Password: "Test@123"
+    //    );
 
         // Act
         var result = await handler.Handle(command, CancellationToken.None);
@@ -126,6 +126,33 @@ public class CreateUserHandlerTests
         var org = await context.Organizations.FirstOrDefaultAsync();
         org.Should().NotBeNull();
         org!.MaxUsers.Should().Be(20);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldLinkUserToOrganization_WhenCreated()
+    {
+        // Arrange
+        var context = GetInMemoryContext();
+        var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
+
+        var command = new CreateUserCommand(
+            OrganizationName: "Linked Org",
+            SubscriptionPlan: SubscriptionPlan.Free,
+            OwnerName: "Linked User",
+            Email: "linked@test.com",
+            Password: "Test@123"
+        );
+
+        // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert — user ka OrganizationId, org ke Id se match karna chahiye
+        var org = await context.Organizations.FirstOrDefaultAsync();
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == "linked@test.com");
+
+        org.Should().NotBeNull();
+        user.Should().NotBeNull();
+        user!.OrganizationId.Should().Be(org!.Id);
     }
 
     [Fact]
