@@ -1,30 +1,36 @@
-﻿using LTS.API.Infrastructure.Persistence;
+﻿using System.Net;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using LTS.API.Common.Response;
+using LTS.API.Infrastructure.Persistence;
 
-namespace LTS.API.Features.Courts.Commands.UpdateCourt;
-
-public class UpdateCourtHandler : IRequestHandler<UpdateCourtCommand, bool>
+namespace LTS.API.Features.Courts.Commands.UpdateCourt
 {
-    private readonly AppDbContext _context;
-
-    public UpdateCourtHandler(AppDbContext context)
+    public class UpdateCourtHandler : IRequestHandler<UpdateCourtCommand, ApiResponse<string>>
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<bool> Handle(UpdateCourtCommand request, CancellationToken ct)
-    {
-        var court = await _context.Courts.FindAsync(request.CourtId);
+        public UpdateCourtHandler(AppDbContext context)
+        {
+            _context = context;
+        }
 
-        if (court == null)
-            return false;
+        public async Task<ApiResponse<string>> Handle(UpdateCourtCommand request, CancellationToken ct)
+        {
+            var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == request.Id, ct);
 
-        court.CourtName = request.CourtName;
-        court.AddressContact = request.AddressContact;
-        court.IsActive = request.IsActive;
+            if (court == null)
+                return ApiResponse<string>.Fail("Court not found", HttpStatusCode.NotFound);
 
-        await _context.SaveChangesAsync(ct);
+            court.CourtName = request.CourtName;
+            court.AddressContact = request.AddressContact;
+            court.IsActive = request.IsActive;
 
-        return true;
+            var result = await _context.SaveChangesAsync(ct);
+
+            return result > 0
+                ? ApiResponse<string>.Ok(data: "Court updated successfully", message: "Success")
+                : ApiResponse<string>.Fail("Update failed");
+        }
     }
 }

@@ -3,34 +3,49 @@ using Microsoft.AspNetCore.Mvc;
 using LTS.API.Features.Courts.Commands.CreateCourt;
 using LTS.API.Features.Courts.Commands.UpdateCourt;
 using LTS.API.Features.Courts.Commands.DeleteCourt;
+using LTS.API.Features.Courts.Queries;
 using LTS.API.Features.Courts.Queries.GetAllCourts;
 
-namespace LTS.API.Features.Courts.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class CourtsController : ControllerBase
+namespace LTS.API.Features.Courts.Controllers
 {
-    private readonly IMediator _mediator;
-
-    public CourtsController(IMediator mediator)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CourtsController : ControllerBase
     {
-        _mediator = mediator;
+        private readonly IMediator _mediator;
+
+        public CourtsController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateCourtCommand command, CancellationToken ct)
+        {
+            var result = await _mediator.Send(command, ct);
+            return StatusCode((int)result.Status, result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateCourtCommand command, CancellationToken ct)
+        {
+            var result = await _mediator.Send(command, ct);
+            return StatusCode((int)result.Status, result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
+        {
+            var result = await _mediator.Send(new DeleteCourtCommand(id), ct);
+            return StatusCode((int)result.Status, result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll(CancellationToken ct)
+        {
+            var result = await _mediator.Send(new GetAllCourtsQuery(), ct);
+            return StatusCode((int)result.Status, result);
+        }
     }
-
-    [HttpPost]
-    public async Task<Guid> Create(CreateCourtCommand command)
-        => await _mediator.Send(command);
-
-    [HttpPut]
-    public async Task<bool> Update(UpdateCourtCommand command)
-        => await _mediator.Send(command);
-
-    [HttpDelete("{id}")]
-    public async Task<bool> Delete(Guid id)
-        => await _mediator.Send(new DeleteCourtCommand(id));
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-        => Ok(await _mediator.Send(new GetAllCourtsQuery()));
 }

@@ -144,6 +144,33 @@ public class CreateUserHandlerTests
         );
 
         // Act
+        var result = await handler.Handle(command, CancellationToken.None);
+
+        // Assert — user ka OrganizationId, org ke Id se match karna chahiye
+        var org = await context.Organizations.FirstOrDefaultAsync();
+        var user = await context.Users.FirstOrDefaultAsync(u => u.Email == "linked@test.com");
+
+        org.Should().NotBeNull();
+        user.Should().NotBeNull();
+        user!.OrganizationId.Should().Be(org!.Id);
+    }
+
+    [Fact]
+    public async Task Handle_ShouldLinkUserToOrganization_WhenCreated()
+    {
+        // Arrange
+        var context = GetInMemoryContext();
+        var handler = new CreateUserCommandHandler(context, GetPasswordHasher().Object);
+
+        var command = new CreateUserCommand(
+            OrganizationName: "Linked Org",
+            SubscriptionPlan: SubscriptionPlan.Free,
+            OwnerName: "Linked User",
+            Email: "linked@test.com",
+            Password: "Test@123"
+        );
+
+        // Act
         await handler.Handle(command, CancellationToken.None);
 
         // Assert — user ka OrganizationId, org ke Id se match karna chahiye

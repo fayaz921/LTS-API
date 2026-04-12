@@ -1,29 +1,35 @@
-﻿using LTS.API.Domain.Entities;
+﻿using LTS.API.Common.Response;
+using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
 
-namespace LTS.API.Features.Courts.Commands.CreateCourt;
-
-public class CreateCourtHandler : IRequestHandler<CreateCourtCommand, Guid>
+namespace LTS.API.Features.Courts.Commands.CreateCourt
 {
-    private readonly AppDbContext _context;
-
-    public CreateCourtHandler(AppDbContext context)
+    public class CreateCourtHandler : IRequestHandler<CreateCourtCommand, ApiResponse<Guid>>
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<Guid> Handle(CreateCourtCommand request, CancellationToken ct)
-    {
-        var court = new Court
+        public CreateCourtHandler(AppDbContext context)
         {
-            CourtName = request.CourtName,
-            AddressContact = request.AddressContact
-        };
+            _context = context;
+        }
 
-        _context.Courts.Add(court);
-        await _context.SaveChangesAsync(ct);
+        public async Task<ApiResponse<Guid>> Handle(CreateCourtCommand request, CancellationToken ct)
+        {
+            var court = new Court
+            {
+                Id = Guid.NewGuid(),
+                CourtName = request.CourtName,
+                AddressContact = request.AddressContact,
+                IsActive = true
+            };
 
-        return court.Id;
+            await _context.Courts.AddAsync(court, ct);
+            var result = await _context.SaveChangesAsync(ct);
+
+            return result > 0
+                ? ApiResponse<Guid>.Created(court.Id)
+                : ApiResponse<Guid>.Fail("Failed to create court");
+        }
     }
 }
