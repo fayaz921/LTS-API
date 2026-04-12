@@ -1,5 +1,4 @@
-﻿using LTS.API.Features.UserManangement.Queries.GetAllUsers;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LTS.API.Features.UserManangement.Controller
@@ -13,11 +12,11 @@ namespace LTS.API.Features.UserManangement.Controller
         {
             _mediator = mediator;
         }
-        [HttpGet("GetAllUsers")]
-        public async Task<IActionResult> GetAllUsers()
-        {
-            var result = await _mediator.Send(new GetAllUsersQuery());
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
-        }
+        //[HttpGet("GetAllUsers")]
+        //public async Task<IActionResult> GetAllUsers()
+        //{
+        //    var result = await _mediator.Send(new GetAllUsersQuery());
+        //    return result.IsSuccess ? Ok(result) : BadRequest(result);
+        //}
     }
 }
