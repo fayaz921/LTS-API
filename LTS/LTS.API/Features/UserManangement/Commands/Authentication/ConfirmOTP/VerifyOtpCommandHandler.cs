@@ -2,7 +2,6 @@
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP
 {
