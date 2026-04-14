@@ -1,0 +1,51 @@
+﻿using LTS.API.Features.UserManangement.Queries.GetAllOrganizations;
+using LTS.API.Features.UserManangement.Queries.GetOrganizationById;
+using LTS.API.Features.UserManangement.Queries.GetSubscriptionOrganizations;
+using LTS.API.Features.UserManangement.Queries.GetTrialOrganizations;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+
+namespace LTS.API.Features.UserManangement.Controller
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class OrganizationController : ControllerBase
+    {
+        private readonly IMediator _mediator;
+        public OrganizationController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+        // GET api/organizations/all
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _mediator.Send(new GetAllOrganizationsQuery());
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        // GET api/organizations/trial
+        [HttpGet("trial")]
+        public async Task<IActionResult> GetTrialOrganizations()
+        {
+            var result = await _mediator.Send(new GetTrialOrganizationsQuery());
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        // GET api/organizations/subscription
+        [HttpGet("subscription")]
+        public async Task<IActionResult> GetSubscriptionOrganizations()
+        {
+            var result = await _mediator.Send(new GetSubscriptionOrganizationsQuery());
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+
+        // GET api/organizations/{id}
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var result = await _mediator.Send(new GetOrganizationByIdQuery { OrganizationId = id });
+            return result.IsSuccess ? Ok(result) : BadRequest(result);
+        }
+    }
+}
