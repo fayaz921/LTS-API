@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LTS.API.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260404060157_InitialCreate")]
+    [Migration("20260417163651_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -102,6 +102,9 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid");
+
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
@@ -169,6 +172,13 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Remarks")
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
@@ -221,8 +231,8 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("CourtName")
                         .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -296,6 +306,9 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("NextHearingDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Remarks")
                         .HasMaxLength(2000)
                         .HasColumnType("character varying(2000)");
@@ -312,6 +325,78 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.HasIndex("CaseId");
 
                     b.ToTable("Followups");
+                });
+
+            modelBuilder.Entity("LTS.API.Domain.Entities.Organization", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsSubscriptionActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool>("IsTrialActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("MaxClients")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(5);
+
+                    b.Property<int>("MaxUsers")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(2);
+
+                    b.Property<string>("OrganizationName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Plan")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("SubscriptionEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("SubscriptionStartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("TrialEndDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("TrialStartDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Petitioner", b =>
@@ -349,6 +434,9 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Phone")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
@@ -374,6 +462,11 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -392,17 +485,39 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<DateTime?>("OTPExpiry")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Otp")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
                     b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("Role")
-                        .HasColumnType("integer");
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Users");
                 });
@@ -478,6 +593,17 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.Navigation("Case");
                 });
 
+            modelBuilder.Entity("LTS.API.Domain.Entities.User", b =>
+                {
+                    b.HasOne("LTS.API.Domain.Entities.Organization", "Organization")
+                        .WithMany("Users")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("LTS.API.Domain.Entities.Case", b =>
                 {
                     b.Navigation("Benches");
@@ -497,6 +623,11 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("LTS.API.Domain.Entities.Department", b =>
                 {
                     b.Navigation("Cases");
+                });
+
+            modelBuilder.Entity("LTS.API.Domain.Entities.Organization", b =>
+                {
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Petitioner", b =>
