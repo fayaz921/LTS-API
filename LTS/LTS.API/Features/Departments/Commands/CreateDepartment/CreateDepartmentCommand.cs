@@ -1,3 +1,3 @@
 ﻿using MediatR;
-namespace LTS.API.Features.Departments.Commands.CreateDepartment;
-public record CreateDepartmentCommand(string DepartmentName, string? AddressContact) : IRequest<Guid>;
+using LTS.API.Common.Response;
+public record CreateDepartmentCommand(string DepartmentName, string? AddressContact) : IRequest<ApiResponse<Guid>>;

@@ -19,5 +19,8 @@ namespace LTS.API.Common.Response
 
         public static ApiResponse<T> Fail(string message, HttpStatusCode status = HttpStatusCode.BadRequest) =>
             new() { Data = default, IsSuccess = false, Status = status, Message = message };
+
+        public static ApiResponse<T> NotFound(string message = "Not Found") =>
+            new() { Data = default,IsSuccess = false,Status = HttpStatusCode.NotFound,Message = message};
     }
 }
