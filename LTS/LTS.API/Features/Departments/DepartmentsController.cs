@@ -1,11 +1,8 @@
-﻿using LTS.API.Features.Departments.Commands.CreateDepartment;
-using LTS.API.Features.Departments.Commands.DeleteDepartment;
-using LTS.API.Features.Departments.Commands.UpdateDepartment;
+﻿using LTS.API.Features.Departments.Commands.UpdateDepartment;
 using LTS.API.Features.Departments.Queries.GetAllDepartments;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LTS.API.Features.Departments.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class DepartmentsController : ControllerBase
@@ -16,26 +13,30 @@ public class DepartmentsController : ControllerBase
         _mediator = mediator;
     }
     [HttpPost]
-    public async Task<Guid> Create(CreateDepartmentCommand command)
+    public async Task<IActionResult> Create(CreateDepartmentCommand command, CancellationToken ct)
     {
-        return await _mediator.Send(command);
+        var result = await _mediator.Send(command, ct);
+        return StatusCode((int)result.Status, result);
     }
 
     [HttpPut]
-    public async Task<bool> Update(UpdateDepartmentCommand command)
+    public async Task<IActionResult> Update(UpdateDepartmentCommand command, CancellationToken ct)
     {
-        return await _mediator.Send(command);
+        var result = await _mediator.Send(command, ct);
+        return StatusCode((int)result.Status, result);
     }
 
     [HttpDelete("{id}")]
-    public async Task<bool> Delete(Guid id)
+    public async Task<IActionResult> Delete(Guid id, CancellationToken ct)
     {
-        return await _mediator.Send(new DeleteDepartmentCommand(id));
+        var result = await _mediator.Send(new DeleteDepartmentCommand(id), ct);
+        return StatusCode((int)result.Status, result);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll(CancellationToken ct)
     {
-        return Ok(await _mediator.Send(new GetAllDepartmentsQuery()));
+        var result = await _mediator.Send(new GetAllDepartmentsQuery(), ct);
+        return StatusCode((int)result.Status, result);
     }
 }
