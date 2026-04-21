@@ -1,6 +1,7 @@
 ﻿using LTS.API.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace LTS.API.Infrastructure.Persistence.Configurations;
 
@@ -34,5 +35,8 @@ public class PetitionerConfiguration : IEntityTypeConfiguration<Petitioner>
 
         builder.Property(x => x.UpdatedBy)
             .HasMaxLength(100);
+
+        builder.HasIndex(x => x.CNIC)
+            .IsUnique();
     }
 }
