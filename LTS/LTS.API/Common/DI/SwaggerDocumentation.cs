@@ -2,14 +2,47 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
-namespace LTS.API.Infrastructure.Services.Extensions
+using Microsoft.OpenApi;
+namespace LTS.API.Common.DI
 {
-    public static class JwtExtension
+    public static class SwaggerDocumentation
     {
+        public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
+        {
+            services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid JWT token"
+                });
+
+                //options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                //{
+                //    {
+                //        new OpenApiSecurityScheme
+                //        {
+                //            Reference = new OpenApiReference
+                //            {
+                //                Type = ReferenceType.SecurityScheme,
+                //                Id = "oauth2"
+                //            }
+                //        },
+                //        Array.Empty<string>()
+                //    }
+                //});
+            });
+
+            return services;
+        }
+
         public static IServiceCollection AddJwtAuthentication(
-            this IServiceCollection services,
-            IConfiguration configuration)
+           this IServiceCollection services,
+           IConfiguration configuration)
         {
             var jwtSettings = configuration
                 .GetSection("JwtSettings")

@@ -1,8 +1,10 @@
-﻿using LTS.API.Features.UserManangement.Commands.Authentication.CreateUser;
+﻿using LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP;
+using LTS.API.Features.UserManangement.Commands.Authentication.CreateUser;
 using LTS.API.Features.UserManangement.Commands.Authentication.ForgetPassword;
 using LTS.API.Features.UserManangement.Commands.Authentication.LoginUser;
 using LTS.API.Features.UserManangement.Commands.Authentication.VerifyEmail;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LTS.API.Features.UserManangement.Controller
@@ -46,6 +48,24 @@ namespace LTS.API.Features.UserManangement.Controller
             var response = await _mediator.Send(verifyEmailCommand);
             return StatusCode((int)response.Status, response);
 
+        }
+        [HttpPost("ConfirmOtp")]
+        public async Task<IActionResult> ConfirmOtp(VerifyOtpCommand confirmOtpCommand)
+        {
+            var response = await _mediator.Send(confirmOtpCommand);
+            return StatusCode((int)response.Status, response);
+
+        }
+
+        [Authorize]
+        [HttpGet("secure-ping")]
+        public IActionResult SecurePing()
+        {
+            return Ok(new
+            {
+                message = "You are authorized 🔐",
+                time = DateTime.UtcNow
+            });
         }
     }
 }

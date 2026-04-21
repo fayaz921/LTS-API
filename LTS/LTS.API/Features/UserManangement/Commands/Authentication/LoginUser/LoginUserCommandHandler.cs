@@ -1,10 +1,10 @@
 ﻿using LTS.API.Common.Response;
 using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.Persistence;
+using LTS.API.Infrastructure.Services.JWT;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
 {
@@ -12,20 +12,31 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
     {
         private readonly AppDbContext _appDbcontext;
         private readonly IPasswordHasher<User> _passwordHasher;
-        public LoginUserCommandHandler(AppDbContext appDbcontext,IPasswordHasher<User> passwordHasher)
+        private readonly ITokenService _tokenService;
+        public LoginUserCommandHandler(AppDbContext appDbcontext, IPasswordHasher<User> passwordHasher, ITokenService tokenService)
         {
             _appDbcontext = appDbcontext;
             _passwordHasher = passwordHasher;
+            _tokenService = tokenService;
         }
         public async Task<ApiResponse<string>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
-            var user =await _appDbcontext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+            var user = await _appDbcontext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
             if (user == null)
-                return ApiResponse<string>.Fail("User Not Found");
+                return ApiResponse<string>.Fail("Invalid email or password");
+
+            // 🔴 IMPORTANT CHECK
+            if (!user.IsActive)
+                return ApiResponse<string>.Fail("Please verify your OTP before login");
+
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
+
             if (result == PasswordVerificationResult.Failed)
-                return ApiResponse<string>.Fail("User Not Found");
-            return ApiResponse<string>.Ok(default!,"Login Success");
+                return ApiResponse<string>.Fail("Invalid email or password");
+
+            var token = _tokenService.GenerateToken(user);
+            return ApiResponse<string>.Ok(token, "Login Success");
         }
     }
 }
