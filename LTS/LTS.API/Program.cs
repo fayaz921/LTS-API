@@ -2,9 +2,10 @@ using FluentValidation;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using LTS.API.Common.Behaviors;
+using LTS.API.Common.DI;
 using LTS.API.Common.Middleware;
-using LTS.API.Infrastructure.BackgroundJobs;
 using LTS.API.Domain.Entities;
+using LTS.API.Infrastructure.BackgroundJobs;
 using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using LTS.API.Infrastructure.Services.Email;
@@ -13,66 +14,61 @@ using LTS.API.Infrastructure.Services.JWT;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Controllers
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
+
+// Swagger + JWT
+builder.Services.AddSwaggerDocumentation();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddJwtValidation(builder.Configuration);
+builder.Services.AddJwtAuthentication(builder.Configuration);
+
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-// MediatR register karna lazmi hai
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
-//JWT Authentication
-builder.Services.AddJwtAuthentication(builder.Configuration);
-builder.Services.AddScoped<ITokenService, TokenService>();
+
+// MediatR
+builder.Services.AddMediatR(cfg =>
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
+
 // FluentValidation
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-// Pipeline Behaviors
+// Middleware pipelines
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
-// Email Settings
-builder.Services.Configure<EmailSettings>(
-    builder.Configuration.GetSection("EmailSettings"));
-builder.Services.AddScoped<HearingAlertJob>();
+// Services
+builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
-//cloudinary settings
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-builder.Services.Configure<CloudinarySettings>(
-    builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+
+// Hangfire
 builder.Services.AddHangfire(config =>
     config.UseSimpleAssemblyNameTypeSerializer()
           .UseRecommendedSerializerSettings()
           .UseMemoryStorage());
+
 builder.Services.AddHangfireServer();
-builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = string.Empty; // Root par Swagger documentation show hogi
-    });
-}
+// All middleware (Swagger, Auth, Controllers, etc.)
+app.MyMiddleWare();
 
-app.UseHttpsRedirection();
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-app.UseAuthentication();
-app.UseAuthorization();
-app.MapControllers();
-//await app.ApplyMigrationsAsync();
+// Hangfire Dashboard
 app.UseHangfireDashboard();
+
 RecurringJob.AddOrUpdate<HearingAlertJob>(
     "hearing-alert-job",
     job => job.ExecuteAsync(),
-    "0 8 * * *");
+    "0 8 * * *"
+);
+
 app.Run();
