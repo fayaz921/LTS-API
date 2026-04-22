@@ -4,5 +4,5 @@ using MediatR;
 
 namespace LTS.API.Features.CaseFeature.Queries.GetById
 {
-    public record GetCaseByIdQuery(Guid Id) : IRequest<ApiResponse<GetCasesDto>>;
+    public record GetCaseByIdQuery(Guid Id) : IRequest<ApiResponse<GetCaseDto>>;
 }

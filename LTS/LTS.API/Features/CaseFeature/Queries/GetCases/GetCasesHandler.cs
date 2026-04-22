@@ -7,7 +7,7 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
     public class GetCasesHandler(AppDbContext context)
     {
         private readonly AppDbContext _context = context;
-        public async Task<ApiResponse<List<GetCasesDto>>> Handle(GetAllCasesQuery request, CancellationToken ct)
+        public async Task<ApiResponse<List<GetCaseDto>>> Handle(GetAllCasesQuery request, CancellationToken ct)
         {
             try
             {
@@ -19,15 +19,15 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
                                                 .AsNoTracking()
                                                 .OrderByDescending(c => c.CreatedAt)
                                                 .ToListAsync(ct);
-                var caseInfo = cases.ToDto();
+                var caseInfo = cases.ToGetAllCasesDto();
 
                 return caseInfo.Any()
-                    ? ApiResponse<List<GetCasesDto>>.Ok(caseInfo)
-                    : ApiResponse<List<GetCasesDto>>.Ok("Case Table is Empty");
+                    ? ApiResponse<List<GetCaseDto>>.Ok(caseInfo)
+                    : ApiResponse<List<GetCaseDto>>.Ok("Case Table is Empty");
             }
             catch
             {
-                return ApiResponse<List<GetCasesDto>>.Fail("Inernel Server error !");
+                return ApiResponse<List<GetCaseDto>>.Fail("Inernel Server error !");
             }
         }
     }

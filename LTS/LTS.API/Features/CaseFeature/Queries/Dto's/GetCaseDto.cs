@@ -3,7 +3,7 @@ using LTS.API.Domain.Enums;
 
 namespace LTS.API.Features.CaseFeature.Queries.GetCases
 {
-    public record GetCasesDto(
+    public record GetCaseDto(
      Guid Id,
     string CaseNo,
     string Title,
