@@ -8,12 +8,12 @@ namespace LTS.API.Features.CaseFeature
 {
     public static class CaseMappers
     {
-        public static Case Map(this CreateCaseCommand cmd)
+        public static Case Map(this CreateCaseCommand cmd,string caseNo)
         {
             return new Case()
             {
                 Id = Guid.NewGuid(),
-                CaseNo = "1234",       // current a temperory number is given 
+                CaseNo = caseNo, 
                 CourtId = cmd.CourtId,
                 DepartmentId = cmd.DepartmentId,
                 DAG = cmd.DAG,
@@ -23,17 +23,18 @@ namespace LTS.API.Features.CaseFeature
                 DateInstitution = cmd.DateInstitution,
                 Status = CaseStatus.Pending,
                 EmailList = cmd.EmailList,
+                OrganizationId=cmd.OrganizationId,
             };
 
         }
 
-        public static List<GetCasesDto> ToDto(this IEnumerable<Case> cases)
+        public static List<GetCaseDto> ToGetAllCasesDto(this IEnumerable<Case> cases)
         {
-            return cases.Select(c => c.ToDto()).ToList();
+            return cases.Select(c => c.ToGetCaseDto()).ToList();
         }
-        public static GetCasesDto ToDto(this Case c)
+        public static GetCaseDto ToGetCaseDto(this Case c)
         {
-            return new GetCasesDto(
+            return new GetCaseDto(
                 Id: c.Id,
                 CaseNo: c.CaseNo,
                 Title: c.Title,

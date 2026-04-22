@@ -3,6 +3,6 @@ using MediatR;
 
 namespace LTS.API.Features.CaseFeature.Queries.GetCases
 {
-    public record GetAllCasesQuery() : IRequest<ApiResponse<List<GetCasesDto>>>;
+    public record GetAllCasesQuery() : IRequest<ApiResponse<List<GetCaseDto>>>;
 }
 

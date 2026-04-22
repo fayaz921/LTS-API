@@ -9,19 +9,19 @@ namespace LTS.API.Features.CaseFeature.Queries.GetById
     public class GetCaseQueryHandler(AppDbContext context)
     {
         private readonly AppDbContext _context = context;
-        public async Task<ApiResponse<GetCasesDto>> Handle(GetCaseByIdQuery request, CancellationToken ct)
+        public async Task<ApiResponse<GetCaseDto>> Handle(GetCaseByIdQuery request, CancellationToken ct)
         {
             try
             {
                 var caseInfo = await _context.Cases.Where(x => x.Id == request.Id).FirstOrDefaultAsync(ct);
-                return caseInfo?.ToDto() != null
-                    ? ApiResponse<GetCasesDto>.Ok(caseInfo.ToDto())
-                    : ApiResponse<GetCasesDto>.Ok("Case Not Found", HttpStatusCode.NotFound);
+                return caseInfo?.ToGetCaseDto() != null
+                    ? ApiResponse<GetCaseDto>.Ok(caseInfo.ToGetCaseDto())
+                    : ApiResponse<GetCaseDto>.Ok("Case Not Found", HttpStatusCode.NotFound);
 
             }
             catch
             {
-                return ApiResponse<GetCasesDto>.Fail("Server Error !", HttpStatusCode.InternalServerError);
+                return ApiResponse<GetCaseDto>.Fail("Server Error !", HttpStatusCode.InternalServerError);
             }
         }
     }

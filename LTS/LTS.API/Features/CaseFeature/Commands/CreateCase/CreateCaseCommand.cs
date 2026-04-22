@@ -12,5 +12,9 @@ namespace LTS.API.Features.CaseFeature.Commands.CreateCase
         string Detail,
         DateTime DateInstitution,
         string EmailList
-        ) : IRequest<ApiResponse<string>>;
+        ) : IRequest<ApiResponse<string>>
+    {
+        public Guid OrganizationId {  get; set; }
+    }
+    
 }
