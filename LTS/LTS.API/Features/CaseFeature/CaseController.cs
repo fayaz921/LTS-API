@@ -15,7 +15,7 @@ namespace LTS.API.Features.CaseFeature
     {
         private readonly IMediator _mediator = mediator;
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateCase(CreateCaseCommand request, CancellationToken ct)
         {
             request.OrganizationId = Guid.Parse("8f2d5e1a-c4b3-4927-90a6-7f8e3b1d5c4a");
@@ -23,35 +23,35 @@ namespace LTS.API.Features.CaseFeature
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpPut]
+        [HttpPut("Update")]
         public async Task<IActionResult> UpdateCase(UpdateCaseCommand request, CancellationToken ct)
         {
             var result = await _mediator.Send(request, ct);
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCase(Guid id, CancellationToken ct)
         {
             var result = await _mediator.Send(new DeleteCaseCommand(id), ct);
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpGet]
+        [HttpGet("get")]
         public async Task<IActionResult> GetAllCases(CancellationToken ct)
         {
             var result = await _mediator.Send(new GetAllCasesQuery());
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get/{id}")]
         public async Task<IActionResult> GetCaseById(Guid id,CancellationToken ct)
         {
             var result = await _mediator.Send(new GetCaseByIdQuery(id)); 
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpGet]
+        [HttpGet("search")]
         public async Task<IActionResult> SearchCases(SearchCasesQuery request, CancellationToken ct)
         {
             request.OrganizationId = Guid.Parse("8f2d5e1a-c4b3-4927-90a6-7f8e3b1d5c4a"); // later we update it 
