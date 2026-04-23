@@ -4,16 +4,16 @@ using LTS.API.Features.CaseFeature.Commands.CreateCase;
 using LTS.API.Features.CaseFeature.Commands.UpdateCase;
 using LTS.API.Features.CaseFeature.Queries.GetCases;
 
-namespace LTS.API.Features.CaseFeature
+namespace LTS.API.Features.CaseFeature.Mappers
 {
     public static class CaseMappers
     {
-        public static Case Map(this CreateCaseCommand cmd,string caseNo)
+        public static Case Map(this CreateCaseCommand cmd, string caseNo)
         {
             return new Case()
             {
                 Id = Guid.NewGuid(),
-                CaseNo = caseNo, 
+                CaseNo = caseNo,
                 CourtId = cmd.CourtId,
                 DepartmentId = cmd.DepartmentId,
                 DAG = cmd.DAG,
@@ -23,13 +23,15 @@ namespace LTS.API.Features.CaseFeature
                 DateInstitution = cmd.DateInstitution,
                 Status = CaseStatus.Pending,
                 EmailList = cmd.EmailList,
-                OrganizationId=cmd.OrganizationId,
+                OrganizationId = cmd.OrganizationId,
             };
 
         }
 
         public static List<GetCaseDto> ToGetAllCasesDto(this IEnumerable<Case> cases)
         {
+            if (cases == null || !cases.Any())
+                return new List<GetCaseDto>();
             return cases.Select(c => c.ToGetCaseDto()).ToList();
         }
         public static GetCaseDto ToGetCaseDto(this Case c)
@@ -53,11 +55,11 @@ namespace LTS.API.Features.CaseFeature
         {
             oldeCase.DepartmentId = cmd.DepartmentId;
             oldeCase.CourtId = cmd.CourtId;
-            oldeCase.DAG=cmd.DAG;
-            oldeCase.Detail= cmd.Detail;
-            oldeCase.Title=cmd.Title;
-            oldeCase.Subject=cmd.Subject;
-            oldeCase.EmailList=cmd.EmailList;
+            oldeCase.DAG = cmd.DAG;
+            oldeCase.Detail = cmd.Detail;
+            oldeCase.Title = cmd.Title;
+            oldeCase.Subject = cmd.Subject;
+            oldeCase.EmailList = cmd.EmailList;
             oldeCase.DateInstitution = cmd.DateInstitution;
 
             return oldeCase;

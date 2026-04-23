@@ -6,6 +6,7 @@ namespace LTS.API.Features.CaseFeature.Commands.CreateCase
     public record CreateCaseCommand(
         Guid CourtId,
         Guid DepartmentId,
+        Guid PetitionerId,
         string DAG,
         string Title,
         string Subject,
@@ -14,7 +15,7 @@ namespace LTS.API.Features.CaseFeature.Commands.CreateCase
         string EmailList
         ) : IRequest<ApiResponse<string>>
     {
-        public Guid OrganizationId {  get; set; }
+        public Guid OrganizationId { get; set; }
     }
-    
+
 }

@@ -9,6 +9,7 @@ namespace LTS.API.Features.CaseFeature.Commands.UpdateCase
     string CaseNo,
     Guid CourtId,
     Guid DepartmentId,
+    Guid PetitionerId,
     string DAG,
     string Title,
     string Subject,

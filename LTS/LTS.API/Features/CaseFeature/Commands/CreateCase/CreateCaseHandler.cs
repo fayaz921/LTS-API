@@ -1,20 +1,24 @@
 ﻿using LTS.API.Common.Response;
 using LTS.API.Domain.Entities;
-using LTS.API.Domain.Enums;
+using LTS.API.Features.CaseFeature.Mappers;
 using LTS.API.Infrastructure.Persistence;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace LTS.API.Features.CaseFeature.Commands.CreateCase
 {
-    public class CreateCaseHandler(AppDbContext context)
+    public class CreateCaseHandler(AppDbContext context) : IRequestHandler<CreateCaseCommand, ApiResponse<string>>
     {
         private readonly AppDbContext _context = context;
 
         public async Task<ApiResponse<string>> Handle(CreateCaseCommand request, CancellationToken ct)
         {
             var newCaseNo = await GenerateCaseNo(request.OrganizationId);
-            await _context.Cases.AddAsync(request.Map(newCaseNo), ct);
+            var newcase = request.Map(newCaseNo);
+            var casePetitioner = request.MapToCasePatitioner(newcase.Id);
+            await _context.Cases.AddAsync(newcase, ct);
+            await _context.CasePetitioners.AddAsync(casePetitioner);
             return await _context.SaveChangesAsync(ct) > 0 ? ApiResponse<string>.Created(default!) :
                                                            ApiResponse<string>.Fail("Internel Server Error!", HttpStatusCode.InternalServerError);
         }

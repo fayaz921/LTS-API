@@ -1,11 +1,13 @@
 ﻿using LTS.API.Common.Response;
+using LTS.API.Features.CaseFeature.Mappers;
 using LTS.API.Infrastructure.Persistence;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace LTS.API.Features.CaseFeature.Commands.UpdateCase
 {
-    public class UpdateCaseHandler(AppDbContext context)
+    public class UpdateCaseHandler(AppDbContext context) : IRequestHandler<UpdateCaseCommand, ApiResponse<string>>
     {
         private readonly AppDbContext _context = context;
 

@@ -51,7 +51,7 @@ namespace LTS.API.Features.CaseFeature
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpGet("search")]
+        [HttpPost("searchCase")]
         public async Task<IActionResult> SearchCases(SearchCasesQuery request, CancellationToken ct)
         {
             request.OrganizationId = Guid.Parse("8f2d5e1a-c4b3-4927-90a6-7f8e3b1d5c4a"); // later we update it 
