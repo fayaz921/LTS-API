@@ -13,6 +13,7 @@
     "https": {
       "commandName": "Project",
       "dotnetRunMessages": true,
+      "launchUrl": "scalar/v1",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:7142;http://localhost:5245",
       "environmentVariables": {

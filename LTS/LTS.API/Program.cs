@@ -3,7 +3,6 @@ using Hangfire;
 using Hangfire.MemoryStorage;
 using LTS.API.Common.Behaviors;
 using LTS.API.Common.DI;
-using LTS.API.Common.Middleware;
 using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.BackgroundJobs;
 using LTS.API.Infrastructure.Persistence;
@@ -14,7 +13,6 @@ using LTS.API.Infrastructure.Services.JWT;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,7 +21,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 // Swagger + JWT
-builder.Services.AddSwaggerDocumentation();
+//builder.Services.AddSwaggerDocumentation();
+builder.Services.AddOpenApiWithJwt();
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddJwtValidation(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -48,7 +47,9 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings")
+);
 // Hangfire
 builder.Services.AddHangfire(config =>
     config.UseSimpleAssemblyNameTypeSerializer()
@@ -61,7 +62,6 @@ var app = builder.Build();
 
 // All middleware (Swagger, Auth, Controllers, etc.)
 app.MyMiddleWare();
-
 // Hangfire Dashboard
 app.UseHangfireDashboard();
 

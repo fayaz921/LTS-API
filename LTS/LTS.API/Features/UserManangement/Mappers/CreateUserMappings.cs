@@ -6,7 +6,6 @@ namespace LTS.API.Features.UserManangement.Mappers
 {
     public static class CreateUserMappings
     {
-        // ✅ Organization banao — hamesha Free Trial se shuru
         public static Organization ToOrganization(this CreateUserCommand request)
         {
             return new Organization
@@ -16,7 +15,6 @@ namespace LTS.API.Features.UserManangement.Mappers
                 Slug = request.OrganizationName.ToLower().Trim().Replace(" ", "-"),
                 Plan = SubscriptionPlan.Free,
 
-                // Trial fields — TrialStartDate pehli login pe set hoga
                 IsTrialActive = true,
                 TrialStartDate = null,
                 TrialEndDate = null,
@@ -32,7 +30,7 @@ namespace LTS.API.Features.UserManangement.Mappers
             };
         }
 
-        // ✅ User banao — OTP ke saath, IsVerified = false
+        //  User banao — OTP ke saath, IsVerified = false
         public static User ToUser(this CreateUserCommand request,Guid organizationId,string passwordHash,string otp)
         {
             return new User
@@ -50,14 +48,5 @@ namespace LTS.API.Features.UserManangement.Mappers
                 CreatedBy = request.Email
             };
         }
-
-        private static int GetMaxUsers(SubscriptionPlan plan) => plan switch
-        {
-            SubscriptionPlan.Free => 2,
-            SubscriptionPlan.Basic => 5,
-            SubscriptionPlan.Pro => 20,
-            SubscriptionPlan.Enterprise => 100,
-            _ => 2
-        };
     }
 }

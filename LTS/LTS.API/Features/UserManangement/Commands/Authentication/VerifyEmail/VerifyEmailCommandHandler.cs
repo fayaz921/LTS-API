@@ -23,24 +23,19 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.VerifyEmail
 
         public async Task<ApiResponse<string>> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
         {
-            // 1. User dhundo email se
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
 
             if (user is null)
                 return ApiResponse<string>.Fail("Email not found", HttpStatusCode.NotFound);
 
-            // 2. OTP sahi hai?
             if (user.Otp != request.Otp)
                 return ApiResponse<string>.Fail("Invalid OTP", HttpStatusCode.BadRequest);
 
-            // 3. OTP expire toh nahi hua?
             if (user.OTPExpiry is null || DateTime.UtcNow > user.OTPExpiry)
                 return ApiResponse<string>.Fail("OTP has expired. Please request a new one.", HttpStatusCode.BadRequest);
 
-            // 4. Naya password hash karo aur save karo
             user.PasswordHash = _passwordHasher.HashPassword(null!, request.NewPassword);
 
-            // 5. OTP clear karo — ek baar use ho gaya
             user.Otp = string.Empty;
             user.OTPExpiry = null;
 

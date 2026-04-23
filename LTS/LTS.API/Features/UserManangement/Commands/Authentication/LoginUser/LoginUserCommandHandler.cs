@@ -26,7 +26,6 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
             if (user == null)
                 return ApiResponse<string>.Fail("Invalid email or password");
 
-            // 🔴 IMPORTANT CHECK
             if (!user.IsActive)
                 return ApiResponse<string>.Fail("Please verify your OTP before login");
 

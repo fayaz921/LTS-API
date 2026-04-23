@@ -5,36 +5,29 @@ using System.Text;
 using Microsoft.OpenApi;
 namespace LTS.API.Common.DI
 {
-    public static class SwaggerDocumentation
+    public static class OpenApiConfiguration
     {
-        public static IServiceCollection AddSwaggerDocumentation(this IServiceCollection services)
+        public static IServiceCollection AddOpenApiWithJwt(this IServiceCollection services)
         {
-            services.AddSwaggerGen(options =>
+            services.AddOpenApi(options =>
             {
-                options.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                options.AddDocumentTransformer((document, context, cancellationToken) =>
                 {
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey,
-                    Scheme = "Bearer",
-                    BearerFormat = "JWT",
-                    In = ParameterLocation.Header,
-                    Description = "Enter 'Bearer' [space] and then your valid JWT token"
-                });
+                    document.Components ??= new();
 
-                //options.AddSecurityRequirement(new OpenApiSecurityRequirement
-                //{
-                //    {
-                //        new OpenApiSecurityScheme
-                //        {
-                //            Reference = new OpenApiReference
-                //            {
-                //                Type = ReferenceType.SecurityScheme,
-                //                Id = "oauth2"
-                //            }
-                //        },
-                //        Array.Empty<string>()
-                //    }
-                //});
+                    document.Components.SecuritySchemes = new Dictionary<string, IOpenApiSecurityScheme>
+                    {
+                        ["Bearer"] = new OpenApiSecurityScheme
+                        {
+                            Type = SecuritySchemeType.Http,
+                            Scheme = "bearer",
+                            BearerFormat = "JWT",
+                            Description = "JWT token yahan paste karo"
+                        }
+                    };
+
+                    return Task.CompletedTask;
+                });
             });
 
             return services;

@@ -16,7 +16,6 @@ namespace LTS.API.Features.UserManangement.Controller
         {
             _mediator = mediator;
         }
-        // GET api/organizations/all
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()
         {
@@ -24,7 +23,6 @@ namespace LTS.API.Features.UserManangement.Controller
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // GET api/organizations/trial
         [HttpGet("trial")]
         public async Task<IActionResult> GetTrialOrganizations()
         {
@@ -32,7 +30,6 @@ namespace LTS.API.Features.UserManangement.Controller
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // GET api/organizations/subscription
         [HttpGet("subscription")]
         public async Task<IActionResult> GetSubscriptionOrganizations()
         {
@@ -40,7 +37,6 @@ namespace LTS.API.Features.UserManangement.Controller
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
-        // GET api/organizations/{id}
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetById(Guid id)
         {
