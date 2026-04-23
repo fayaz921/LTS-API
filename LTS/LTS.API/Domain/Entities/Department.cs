@@ -6,6 +6,7 @@
         public string DepartmentName { get; set; } = string.Empty;
         public string? AddressContact { get; set; }
         public bool IsActive { get; set; }
+        public Guid OrganizationId { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // Navigation
