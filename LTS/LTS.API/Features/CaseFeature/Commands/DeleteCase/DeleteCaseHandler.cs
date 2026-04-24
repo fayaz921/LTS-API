@@ -1,11 +1,12 @@
 ﻿using LTS.API.Common.Response;
 using LTS.API.Infrastructure.Persistence;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace LTS.API.Features.CaseFeature.Commands.DeleteCase
 {
-    public class DeleteCaseHandler
+    public class DeleteCaseHandler : IRequestHandler<DeleteCaseCommand, ApiResponse<string>>
     {
         private readonly AppDbContext _context;
 
