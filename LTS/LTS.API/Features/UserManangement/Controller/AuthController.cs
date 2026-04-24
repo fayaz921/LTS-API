@@ -1,4 +1,6 @@
-﻿using LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP;
+﻿using CloudinaryDotNet.Actions;
+using LTS.API.Domain.Enums;
+using LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP;
 using LTS.API.Features.UserManangement.Commands.Authentication.CreateUser;
 using LTS.API.Features.UserManangement.Commands.Authentication.ForgetPassword;
 using LTS.API.Features.UserManangement.Commands.Authentication.LoginUser;
@@ -15,11 +17,11 @@ namespace LTS.API.Features.UserManangement.Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public class AuthentiationController : ControllerBase
+    public class AuthController : ControllerBase
     {
-        private readonly ILogger<AuthentiationController> _logger;
+        private readonly ILogger<AuthController> _logger;
         private readonly IMediator _mediator;
-        public AuthentiationController(ILogger<AuthentiationController> logger, IMediator mediator)
+        public AuthController(ILogger<AuthController> logger, IMediator mediator)
         {
             _logger = logger;
             _mediator = mediator;
@@ -57,13 +59,13 @@ namespace LTS.API.Features.UserManangement.Controller
 
         }
 
-        [Authorize]
-        [HttpGet("secure-ping")]
+        [Authorize(Roles =nameof(UserRole.User))]
+        [HttpGet("check")]
         public IActionResult SecurePing()
         {
             return Ok(new
             {
-                message = "You are authorized 🔐",
+                message = "You are authorized ",
                 time = DateTime.UtcNow
             });
         }

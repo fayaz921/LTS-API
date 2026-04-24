@@ -11,12 +11,10 @@
         public int MaxClients { get; set; }
         public int CurrentUserCount { get; set; }
 
-        // Trial info
         public bool IsTrialActive { get; set; }
         public DateTime? TrialStartDate { get; set; }
         public DateTime? TrialEndDate { get; set; }
 
-        // Subscription info
         public bool IsSubscriptionActive { get; set; }
         public DateTime? SubscriptionStartDate { get; set; }
         public DateTime? SubscriptionEndDate { get; set; }

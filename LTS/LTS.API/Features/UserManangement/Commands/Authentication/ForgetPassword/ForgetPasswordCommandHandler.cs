@@ -21,21 +21,18 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.ForgetPasswor
         }
         public async Task<ApiResponse<string>> Handle(ForgetPasswordCommand request, CancellationToken cancellationToken)
         {
-            // 1. Email check karo
             var user = await _context.Users
                 .FirstOrDefaultAsync(x => x.Email == request.Email, cancellationToken);
 
             if (user is null)
                 return ApiResponse<string>.Fail("Email not found", HttpStatusCode.NotFound);
 
-            // 2. OTP generate karo aur save karo
             var otp = GeneraterOtp.GenerateOtp();
             user.Otp = otp;
             user.OTPExpiry = DateTime.UtcNow.AddMinutes(10);
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            // 3. Email bhejo
             var emailSent = await _emailService.ForgetPasswordOtp(user.Email, user.Name, otp);
 
             if (!emailSent)
