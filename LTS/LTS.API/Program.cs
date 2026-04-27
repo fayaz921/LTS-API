@@ -6,6 +6,7 @@ using LTS.API.Common.DI;
 using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.BackgroundJobs;
 using LTS.API.Infrastructure.Persistence;
+using LTS.API.Infrastructure.Persistence.Extensions;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
 using LTS.API.Infrastructure.Services.Email;
 using LTS.API.Infrastructure.Services.Extensions;
@@ -70,5 +71,7 @@ RecurringJob.AddOrUpdate<HearingAlertJob>(
     job => job.ExecuteAsync(),
     "0 8 * * *"
 );
+
+await app.ApplyMigrationsAsync();
 
 app.Run();
