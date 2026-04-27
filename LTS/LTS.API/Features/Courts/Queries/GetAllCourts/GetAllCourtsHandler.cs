@@ -1,8 +1,9 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using LTS.API.Common.Response;
-using LTS.API.Infrastructure.Persistence;
+﻿using LTS.API.Common.Response;
 using LTS.API.Features.Courts.DTOs;
+using LTS.API.Features.Courts.Mappings;
+using LTS.API.Infrastructure.Persistence;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.Courts.Queries.GetAllCourts;
 
@@ -15,19 +16,13 @@ namespace LTS.API.Features.Courts.Queries.GetAllCourts;
             _context = context;
         }
 
-        public async Task<ApiResponse<List<CourtDto>>> Handle(GetAllCourtsQuery request, CancellationToken ct)
-        {
-            var courts = await _context.Courts
-                .Where(x => x.IsActive)
-                .Select(x => new CourtDto
-                {
-                    Id = x.Id,
-                    CourtName = x.CourtName,
-                    AddressContact = x.AddressContact,
-                    IsActive = x.IsActive
-                })
-                .ToListAsync(ct);
+    public async Task<ApiResponse<List<CourtDto>>> Handle(GetAllCourtsQuery request, CancellationToken ct)
+    {
+        var courts = await _context.Courts
+            .Where(x => x.IsActive)
+            .Select(x => x.ToDto())
+            .ToListAsync(ct);
 
-            return ApiResponse<List<CourtDto>>.Ok(courts);
-        }
+        return ApiResponse<List<CourtDto>>.Ok(courts);
     }
+}

@@ -11,7 +11,7 @@ public class UpdateDepartmentHandler : IRequestHandler<UpdateDepartmentCommand, 
     }
     public async Task<ApiResponse<string>> Handle(UpdateDepartmentCommand request, CancellationToken ct)
     {
-        var department = await _context.Departments.FindAsync(request.DepartmentId);
+        var department = await _context.Departments.FindAsync(new object[] { request.DepartmentId }, ct);
         if (department == null)
             return ApiResponse<string>.NotFound("Department not found");
 
@@ -23,7 +23,7 @@ public class UpdateDepartmentHandler : IRequestHandler<UpdateDepartmentCommand, 
 
         if (result > 0)
         {
-            return ApiResponse<string>.Ok(message: "Updated successfully");
+            return ApiResponse<string>.Ok(message: "Operation successful");
         }
         else
         {

@@ -17,18 +17,19 @@ namespace LTS.API.Features.Courts.Commands.DeleteCourt
 
         public async Task<ApiResponse<string>> Handle(DeleteCourtCommand request, CancellationToken ct)
         {
-            var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == request.Id, ct);
-
+            var court = await _context.Courts.FindAsync(new object[] { request.Id }, ct);
             if (court == null)
-                return ApiResponse<string>.Fail("Court not found", HttpStatusCode.NotFound);
-
+                return ApiResponse<string>.NotFound("Court not found"); 
             court.IsActive = false;
-
             var result = await _context.SaveChangesAsync(ct);
-
-            return result > 0
-                ? ApiResponse<string>.Ok(data: "Court updated successfully", message: "Success")
-                : ApiResponse<string>.Fail("Delete failed");
+            if (result > 0)
+            {
+                return ApiResponse<string>.Ok(message: "Operation successful");
+            }
+            else
+            {
+                return ApiResponse<string>.Fail("Delete failed");
+            }
         }
     }
 }

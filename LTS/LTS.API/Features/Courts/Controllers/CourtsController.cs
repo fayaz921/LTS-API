@@ -1,10 +1,11 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using LTS.API.Features.Courts.Commands.CreateCourt;
-using LTS.API.Features.Courts.Commands.UpdateCourt;
+﻿using LTS.API.Features.Courts.Commands.CreateCourt;
 using LTS.API.Features.Courts.Commands.DeleteCourt;
+using LTS.API.Features.Courts.Commands.UpdateCourt;
 using LTS.API.Features.Courts.Queries;
 using LTS.API.Features.Courts.Queries.GetAllCourts;
+using LTS.API.Features.Courts.Queries.GetCourtById;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 
 namespace LTS.API.Features.Courts.Controllers
@@ -45,6 +46,13 @@ namespace LTS.API.Features.Courts.Controllers
         public async Task<IActionResult> GetAll(CancellationToken ct)
         {
             var result = await _mediator.Send(new GetAllCourtsQuery(), ct);
+            return StatusCode((int)result.Status, result);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+        {
+            var result = await _mediator.Send(new GetCourtByIdQuery(id), ct);
             return StatusCode((int)result.Status, result);
         }
     }

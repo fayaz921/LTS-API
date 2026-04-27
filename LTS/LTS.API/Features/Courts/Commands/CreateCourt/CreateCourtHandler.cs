@@ -21,15 +21,21 @@ namespace LTS.API.Features.Courts.Commands.CreateCourt
                 Id = Guid.NewGuid(),
                 CourtName = request.CourtName,
                 AddressContact = request.AddressContact,
-                IsActive = true
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow  
             };
 
             await _context.Courts.AddAsync(court, ct);
             var result = await _context.SaveChangesAsync(ct);
 
-            return result > 0
-                ? ApiResponse<Guid>.Created(court.Id)
-                : ApiResponse<Guid>.Fail("Failed to create court");
+            if (result > 0)
+            {
+                return ApiResponse<Guid>.Created(court.Id);
+            }
+            else
+            {
+                return ApiResponse<Guid>.Fail("Failed to create court");
+            }
         }
     }
 }
