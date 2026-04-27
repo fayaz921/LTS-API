@@ -1,8 +1,12 @@
-﻿using LTS.API.Features.Departments.Commands.UpdateDepartment;
+﻿using LTS.API.Features.Departments.Commands.CreateDepartment;
+using LTS.API.Features.Departments.Commands.DeleteDepartment;
+using LTS.API.Features.Departments.Commands.UpdateDepartment;
 using LTS.API.Features.Departments.Queries.GetAllDepartments;
+using LTS.API.Features.Departments.Queries.GetDepartmentById;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
+namespace LTS.API.Features.Departments.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class DepartmentsController : ControllerBase
@@ -19,7 +23,7 @@ public class DepartmentsController : ControllerBase
         return StatusCode((int)result.Status, result);
     }
 
-    [HttpPut]
+[HttpPut]
     public async Task<IActionResult> Update(UpdateDepartmentCommand command, CancellationToken ct)
     {
         var result = await _mediator.Send(command, ct);
@@ -37,6 +41,13 @@ public class DepartmentsController : ControllerBase
     public async Task<IActionResult> GetAll(CancellationToken ct)
     {
         var result = await _mediator.Send(new GetAllDepartmentsQuery(), ct);
+        return StatusCode((int)result.Status, result);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
+    {
+        var result = await _mediator.Send(new GetDepartmentByIdQuery(id), ct);
         return StatusCode((int)result.Status, result);
     }
 }

@@ -9,9 +9,9 @@ public class DeleteDepartmentHandler : IRequestHandler<DeleteDepartmentCommand, 
     {
         _context = context;
     }
-    public async Task<ApiResponse<string>> Handle(DeleteDepartmentCommand request, CancellationToken ct)
+public async Task<ApiResponse<string>> Handle(DeleteDepartmentCommand request, CancellationToken ct)
     {
-        var department = await _context.Departments.FindAsync(request.DepartmentId);
+        var department = await _context.Departments.FindAsync(new object[] { request.DepartmentId }, ct);
         if (department == null)
             return ApiResponse<string>.NotFound("Department not found");
         department.IsActive = false;
@@ -27,4 +27,8 @@ public class DeleteDepartmentHandler : IRequestHandler<DeleteDepartmentCommand, 
             return ApiResponse<string>.Fail("Delete failed");
         }
     }
-}
+}  
+
+
+
+

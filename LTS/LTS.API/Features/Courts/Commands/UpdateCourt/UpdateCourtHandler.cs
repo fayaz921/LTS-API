@@ -17,10 +17,10 @@ namespace LTS.API.Features.Courts.Commands.UpdateCourt
 
         public async Task<ApiResponse<string>> Handle(UpdateCourtCommand request, CancellationToken ct)
         {
-            var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == request.Id, ct);
+            var court = await _context.Courts.FindAsync(new object[] { request.Id }, ct);
 
             if (court == null)
-                return ApiResponse<string>.Fail("Court not found", HttpStatusCode.NotFound);
+                return ApiResponse<string>.NotFound("Court not found");
 
             court.CourtName = request.CourtName;
             court.AddressContact = request.AddressContact;
@@ -28,9 +28,14 @@ namespace LTS.API.Features.Courts.Commands.UpdateCourt
 
             var result = await _context.SaveChangesAsync(ct);
 
-            return result > 0
-                ? ApiResponse<string>.Ok(data: "Court updated successfully", message: "Success")
-                : ApiResponse<string>.Fail("Update failed");
+            if (result > 0)
+            {
+                return ApiResponse<string>.Ok(message: "Operation successful");
+            }
+            else
+            {
+                return ApiResponse<string>.Fail("Update failed");
+            }
         }
     }
 }

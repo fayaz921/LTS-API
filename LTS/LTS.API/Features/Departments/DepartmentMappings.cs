@@ -1,16 +1,16 @@
 ﻿using LTS.API.Domain.Entities;
 using LTS.API.Features.Departments.DTOs;
 namespace LTS.API.Features.Departments.Mappings;
-public static class DepartmentMappings
-{
-    public static GetAllDepartmentsDto ToDto(this Department department)
+    public static class DepartmentMappings
     {
-        return new GetAllDepartmentsDto
+        public static DepartmentDto ToDto(this Department department)
         {
-            Id = department.Id,
-            DepartmentName = department.DepartmentName,
-            AddressContact = department.AddressContact,
-            IsActive = department.IsActive
-        };
+            return new DepartmentDto
+            {
+                Id = department.Id,
+                DepartmentName = department.DepartmentName,
+                AddressContact = department.AddressContact,
+                IsActive = department.IsActive
+            };
+        }
     }
-}
