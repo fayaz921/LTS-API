@@ -9,12 +9,12 @@ namespace LTS.API.Domain.Entities
         public string Slug { get; set; } = string.Empty;
         public SubscriptionPlan Plan { get; set; } = SubscriptionPlan.Basic;
 
-        // 🔵 PAID TRIAL
+        //  PAID TRIAL
         public DateTime? TrialStartDate { get; set; }
         public DateTime? TrialEndDate { get; set; }
         public bool IsTrialActive { get; set; }
 
-        // 🔵 PAID SUBSCRIPTION
+        // PAID SUBSCRIPTION
         public DateTime? SubscriptionStartDate { get; set; }
         public DateTime? SubscriptionEndDate { get; set; }
         public bool IsSubscriptionActive { get; set; }
