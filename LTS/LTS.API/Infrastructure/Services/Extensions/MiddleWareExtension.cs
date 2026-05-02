@@ -32,6 +32,7 @@ namespace LTS.API.Infrastructure.Services.Extensions
             });
             app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseHttpsRedirection();
+            app.UseCors("AllowFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();

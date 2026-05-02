@@ -21,6 +21,15 @@ var builder = WebApplication.CreateBuilder(args);
 // Controllers
 builder.Services.AddControllers();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
 // Swagger + JWT
 //builder.Services.AddSwaggerDocumentation();
 builder.Services.AddOpenApiWithJwt();
@@ -60,7 +69,7 @@ builder.Services.AddHangfire(config =>
 builder.Services.AddHangfireServer();
 
 var app = builder.Build();
-
+app.UseCors("AllowFrontend");
 // All middleware (Swagger, Auth, Controllers, etc.)
 app.MyMiddleWare();
 // Hangfire Dashboard
