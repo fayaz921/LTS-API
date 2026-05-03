@@ -20,6 +20,7 @@ public class CreateDepartmentHandler : IRequestHandler<CreateDepartmentCommand, 
             DepartmentName = request.DepartmentName,
             AddressContact = request.AddressContact,
             IsActive = true,
+            OrganizationId = Guid.Parse("8f2d5e1a-c4b3-4927-90a6-7f8e3b1d5c4a"),// later we send it dynamicaly
             CreatedAt = DateTime.UtcNow
         };
 

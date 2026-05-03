@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.CaseFeature.Queries.GetCases
 {
-    public class GetCasesHandler(AppDbContext context):IRequestHandler<GetAllCasesQuery,ApiResponse<List<GetCaseDto>>>
+    public class GetCasesHandler(AppDbContext context) : IRequestHandler<GetAllCasesQuery, ApiResponse<List<GetCaseDto>>>
     {
         private readonly AppDbContext _context = context;
         public async Task<ApiResponse<List<GetCaseDto>>> Handle(GetAllCasesQuery request, CancellationToken ct)
@@ -20,10 +20,10 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
                                                 .AsNoTracking()
                                                 .OrderByDescending(c => c.CreatedAt)
                                                 .ToListAsync(ct);
-                var caseInfo = cases.ToGetAllCasesDto();
+                var casesInfo = cases.ToGetAllCasesDto();
 
-                return caseInfo.Any()
-                    ? ApiResponse<List<GetCaseDto>>.Ok(caseInfo)
+                return casesInfo.Any() && cases.Count > 0
+                    ? ApiResponse<List<GetCaseDto>>.Ok(casesInfo)
                     : ApiResponse<List<GetCaseDto>>.Ok("Case Table is Empty");
             }
             catch
