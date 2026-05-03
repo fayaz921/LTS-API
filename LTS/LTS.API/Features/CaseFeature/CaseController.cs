@@ -37,7 +37,7 @@ namespace LTS.API.Features.CaseFeature
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpGet("get")]
+        [HttpGet("getAll")]
         public async Task<IActionResult> GetAllCases(CancellationToken ct)
         {
             var result = await _mediator.Send(new GetAllCasesQuery());

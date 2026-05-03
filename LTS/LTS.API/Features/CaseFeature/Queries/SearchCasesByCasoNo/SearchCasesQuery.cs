@@ -4,7 +4,7 @@ using MediatR;
 
 namespace LTS.API.Features.CaseFeature.Queries.SearchCases
 {
-    public record SearchCasesQuery(string CaseNo, string Cnic, string petititionerName) : IRequest<ApiResponse<List<GetCaseDto>>>
+    public record SearchCasesQuery(string CaseNo, string Cnic, string PetititionerName,int Page,int PageSize) : IRequest<ApiResponse<List<GetCaseDto>>>
     {
         public Guid OrganizationId { get; set; }
     }

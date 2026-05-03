@@ -27,13 +27,13 @@ public static class DatabaseExtensions
         }
     }
     private static async Task SeedSuperAdminAsync(
-        IServiceProvider services,
-        ILogger logger)
+      IServiceProvider services,
+      ILogger logger)
     {
         var context = services.GetRequiredService<AppDbContext>();
         var passwordHasher = services.GetRequiredService<IPasswordHasher<User>>();
 
-        // check if superadmin already exists
+        // Check if superadmin already exists
         var exists = await context.Users
             .AnyAsync(u => u.Role == UserRole.SuperAdmin);
 
@@ -43,23 +43,30 @@ public static class DatabaseExtensions
             return;
         }
 
-        // create default organization for superadmin
-        var organization = new Organization
-        {
-            Id = Guid.NewGuid(),
-            OrganizationName = "LTS Administration",
-            Slug = "lts-administration",
-            Plan = SubscriptionPlan.Enterprise,
-            IsActive = true,
-            IsSubscriptionActive = true,
-            MaxUsers = 100,
-            MaxClients = 1000,
-            SubscriptionStartDate = DateTime.UtcNow,
-            SubscriptionEndDate = DateTime.UtcNow.AddYears(10),
-            CreatedAt = DateTime.UtcNow,
-        };
+        // Also check if the organization already exists (e.g. from a failed previous run)
+        var organization = await context.Organizations
+            .FirstOrDefaultAsync(o => o.Slug == "lts-administration");
 
-        // create superadmin user
+        if (organization is null)
+        {
+            organization = new Organization
+            {
+                Id = Guid.NewGuid(),
+                OrganizationName = "LTS Administration",
+                Slug = "lts-administration",
+                Plan = SubscriptionPlan.Enterprise,
+                IsActive = true,
+                IsSubscriptionActive = true,
+                MaxUsers = 100,
+                MaxClients = 1000,
+                SubscriptionStartDate = DateTime.UtcNow,
+                SubscriptionEndDate = DateTime.UtcNow.AddYears(10),
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            await context.Organizations.AddAsync(organization);
+        }
+
         var superAdmin = new User
         {
             Id = Guid.NewGuid(),
@@ -75,10 +82,9 @@ public static class DatabaseExtensions
 
         superAdmin.PasswordHash = passwordHasher.HashPassword(superAdmin, "fayaz921");
 
-        await context.Organizations.AddAsync(organization);
         await context.Users.AddAsync(superAdmin);
         await context.SaveChangesAsync();
 
-        logger.LogInformation("SuperAdmin seeded successfully. Email: mfayaz21703@gmail.com Password: fayaz921");
+        logger.LogInformation("SuperAdmin seeded successfully.");
     }
 }
