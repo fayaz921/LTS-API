@@ -36,7 +36,11 @@ namespace LTS.API.Features.UserManangement.Controller
         public async Task<IActionResult> Login(LoginUserCommand loginUserCommand)
         {
             var response = await _mediator.Send(loginUserCommand);
+
+            if (!response.IsSuccess)
+                return StatusCode((int)response.Status, response);
             return StatusCode((int)response.Status, response);
+
         }
         [HttpPost("ForgetPassword")]
         public async Task<IActionResult> ForgetPassword(ForgetPasswordCommand forgetPasswordCommand)
@@ -58,6 +62,21 @@ namespace LTS.API.Features.UserManangement.Controller
             return StatusCode((int)response.Status, response);
 
         }
+        // Cookie automatically aayegi — body mein kuch nahi chahiye
+        [HttpPost("RefreshToken")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var response = await _mediator.Send(new RefreshTokenCommand());
+            return StatusCode((int)response.Status, response);
+        }
+
+        // Cookie delete hogi — user logout
+        [HttpPost("Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var response = await _mediator.Send(new LogoutCommand());
+            return StatusCode((int)response.Status, response);
+        }
 
         [Authorize(Roles =nameof(UserRole.User))]
         [HttpGet("check")]
@@ -65,7 +84,7 @@ namespace LTS.API.Features.UserManangement.Controller
         {
             return Ok(new
             {
-                message = "You are authorized ",
+                message = "You are authorized ",    
                 time = DateTime.UtcNow
             });
         }
