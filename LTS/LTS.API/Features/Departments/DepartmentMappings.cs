@@ -10,7 +10,8 @@ namespace LTS.API.Features.Departments.Mappings;
                 Id = department.Id,
                 DepartmentName = department.DepartmentName,
                 AddressContact = department.AddressContact,
-                IsActive = department.IsActive
+                IsActive = department.IsActive,
+                CreatedAt = department.CreatedAt
             };
         }
     }

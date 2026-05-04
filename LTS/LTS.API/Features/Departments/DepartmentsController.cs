@@ -23,9 +23,10 @@ public class DepartmentsController : ControllerBase
         return StatusCode((int)result.Status, result);
     }
 
-[HttpPut]
-    public async Task<IActionResult> Update(UpdateDepartmentCommand command, CancellationToken ct)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, UpdateDepartmentCommand command, CancellationToken ct)
     {
+        command = command with { DepartmentId = id };
         var result = await _mediator.Send(command, ct);
         return StatusCode((int)result.Status, result);
     }
