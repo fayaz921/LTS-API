@@ -13,6 +13,6 @@ namespace LTS.API.Domain.Entities
         public string Otp { get; set; } = string.Empty;
         public DateTime? OTPExpiry { get; set; }
         public Organization Organization { get; set; } = null!;
-
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     }
 }

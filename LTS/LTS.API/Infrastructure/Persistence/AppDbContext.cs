@@ -21,6 +21,7 @@ namespace LTS.API.Infrastructure.Persistence
         public DbSet<User> Users => Set<User>();
         public DbSet<Organization> Organizations => Set<Organization>();
         public DbSet<CaseNumberSequence> CaseNumberSequences => Set<CaseNumberSequence>();
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

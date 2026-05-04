@@ -1,5 +1,6 @@
 ﻿using LTS.API.Common.Response;
 using LTS.API.Domain.Entities;
+using LTS.API.Features.UserManangement.DTOs;
 using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Services.JWT;
 using MediatR;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
 {
-    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, ApiResponse<string>>
+    public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, ApiResponse<ResponseLogin>>
     {
         private readonly AppDbContext _appDbcontext;
         private readonly IPasswordHasher<User> _passwordHasher;
@@ -19,23 +20,37 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
             _passwordHasher = passwordHasher;
             _tokenService = tokenService;
         }
-        public async Task<ApiResponse<string>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<ResponseLogin>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
             var user = await _appDbcontext.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
-                return ApiResponse<string>.Fail("Invalid email or password");
+                return ApiResponse<ResponseLogin>.Fail("Invalid email or password");
 
             if (!user.IsActive)
-                return ApiResponse<string>.Fail("Please verify your OTP before login");
+                return ApiResponse<ResponseLogin>.Fail("Please verify your OTP before login");
 
             var result = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
             if (result == PasswordVerificationResult.Failed)
-                return ApiResponse<string>.Fail("Invalid email or password");
+                return ApiResponse<ResponseLogin>.Fail("Invalid email or password");
 
-            var token = _tokenService.GenerateToken(user);
-            return ApiResponse<string>.Ok(token, "Login Success");
+            var accesstoken = _tokenService.GenerateToken(user);
+            var refreshToken = _tokenService.GenerateRefreshToken();
+
+            await _appDbcontext.RefreshTokens.AddAsync(new RefreshToken
+            {
+                UserId = user.Id,
+                Token = refreshToken,
+                ExpiryDate = DateTime.UtcNow.AddDays(7)
+            });
+
+            await _appDbcontext.SaveChangesAsync();
+
+            return ApiResponse<ResponseLogin>.Ok(new ResponseLogin { 
+             AccessToken=  accesstoken,
+               RefreshToken= refreshToken
+            });
         }
     }
 }
