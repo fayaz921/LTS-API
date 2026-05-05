@@ -68,6 +68,7 @@ builder.Services.AddHangfire(config =>
           .UseMemoryStorage());
 
 builder.Services.AddHangfireServer();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 app.UseCors("AllowFrontend");
