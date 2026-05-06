@@ -36,7 +36,6 @@
     <Folder Include="Common\Behaviors\" />
     <Folder Include="Common\Exceptions\" />
     <Folder Include="Common\Middleware\" />
-    <Folder Include="Common\Response\" />
     <Folder Include="Infrastructure\BackgroundJobs\" />
   </ItemGroup>
 
