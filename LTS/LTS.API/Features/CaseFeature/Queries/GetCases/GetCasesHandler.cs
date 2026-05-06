@@ -1,35 +1,74 @@
 ﻿using LTS.API.Common.Response;
-using LTS.API.Features.CaseFeature.Mappers;
+using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.CaseFeature.Queries.GetCases
 {
-    public class GetCasesHandler(AppDbContext context) : IRequestHandler<GetAllCasesQuery, ApiResponse<List<GetCaseDto>>>
+    public class GetCasesHandler(AppDbContext context)
+        : IRequestHandler<GetAllCasesQuery, ApiResponse<PagedResult<GetCaseDto>>>
     {
         private readonly AppDbContext _context = context;
-        public async Task<ApiResponse<List<GetCaseDto>>> Handle(GetAllCasesQuery request, CancellationToken ct)
+
+        public async Task<ApiResponse<PagedResult<GetCaseDto>>> Handle(
+            GetAllCasesQuery request, CancellationToken ct)
         {
             try
             {
-                var cases = await _context.Cases.Include(c => c.Court)
-                                                .Include(c => c.Department)
-                                                .Include(c => c.CasePetitioners)
-                                                    .ThenInclude(cp => cp.Petitioner)
-                                                .AsNoTracking()
-                                                .OrderByDescending(c => c.CreatedAt)
-                                                .ToListAsync(ct);
-                var casesInfo = cases.ToGetAllCasesDto();
+                var query = BuildQuery(request);
 
-                return casesInfo.Any() && cases.Count > 0
-                    ? ApiResponse<List<GetCaseDto>>.Ok(casesInfo)
-                    : ApiResponse<List<GetCaseDto>>.Ok("Case Table is Empty");
+                var totalCount = await query.CountAsync(ct);
+                if (totalCount == 0)
+                    return ApiResponse<PagedResult<GetCaseDto>>.Ok("Case Table is Empty");
+
+                var cases = await FetchPageAsync(query, request, ct);
+
+                return ApiResponse<PagedResult<GetCaseDto>>.Ok(ToPagedResult(cases, totalCount, request));
             }
-            catch
+            catch (Exception ex)
             {
-                return ApiResponse<List<GetCaseDto>>.Fail("Inernel Server error !");
+                return ApiResponse<PagedResult<GetCaseDto>>
+                    .Fail($"Internal server error: {ex.Message}");
             }
         }
+
+        #region private helpers 
+
+        private IQueryable<Case> BuildQuery(GetAllCasesQuery request) =>
+            _context.Cases
+                .Where(c => c.OrganizationId == request.OrganizationId)
+                .AsNoTracking()
+                .OrderByDescending(c => c.CreatedAt);
+
+        private static async Task<List<GetCaseDto>> FetchPageAsync(
+            IQueryable<Case> query, GetAllCasesQuery request, CancellationToken ct) =>
+            await query
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(c => new GetCaseDto(
+                    c.Id,
+                    c.CaseNo,
+                    c.Title,
+                    c.Subject,
+                    c.DAG,
+                    c.Status.ToString(),
+                    c.DateInstitution,
+                    c.Court != null ? c.Court.CourtName : "N/A",
+                    c.Department != null ? c.Department.DepartmentName : "N/A",
+                    c.CasePetitioners.Select(cp => cp.Petitioner.Name).ToList()
+                ))
+                .ToListAsync(ct);
+
+        private static PagedResult<GetCaseDto> ToPagedResult(
+            List<GetCaseDto> cases, int totalCount, GetAllCasesQuery request) =>
+            new()
+            {
+                Items = cases,
+                TotalCount = totalCount,
+                Page = request.Page,
+                PageSize = request.PageSize
+            };
+        #endregion
     }
 }

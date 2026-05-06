@@ -38,9 +38,16 @@ namespace LTS.API.Features.CaseFeature
         }
 
         [HttpGet("getAll")]
-        public async Task<IActionResult> GetAllCases(CancellationToken ct)
+        public async Task<IActionResult> GetAllCases(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 20,
+            CancellationToken ct = default)
         {
-            var result = await _mediator.Send(new GetAllCasesQuery());
+            var result = await _mediator.Send(new GetAllCasesQuery
+            {
+                Page = page,
+                PageSize = pageSize
+            });
             return StatusCode((int)result.Status, result);
         }
 
