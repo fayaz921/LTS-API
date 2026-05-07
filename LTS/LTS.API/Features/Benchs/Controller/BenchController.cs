@@ -10,7 +10,7 @@ namespace LTS.API.Features.Benchs.Controllers;
 
 [ApiController]
 [Route("api/bench")]
-[Authorize]
+
 public class BenchController : ControllerBase
 {
     private readonly IMediator _mediator;
@@ -21,7 +21,7 @@ public class BenchController : ControllerBase
     }
 
     // POST api/bench
-    [HttpPost]
+    [HttpPost ("createbench")]
     public async Task<IActionResult> Create([FromBody] CreateBenchCommand command)
     {
         var response = await _mediator.Send(command);
