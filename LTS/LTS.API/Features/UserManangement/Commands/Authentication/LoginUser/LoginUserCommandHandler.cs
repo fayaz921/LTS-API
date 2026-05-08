@@ -14,11 +14,13 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
         private readonly AppDbContext _appDbcontext;
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly ITokenService _tokenService;
-        public LoginUserCommandHandler(AppDbContext appDbcontext, IPasswordHasher<User> passwordHasher, ITokenService tokenService)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public LoginUserCommandHandler(AppDbContext appDbcontext, IPasswordHasher<User> passwordHasher, ITokenService tokenService,IHttpContextAccessor httpContextAccessor)
         {
             _appDbcontext = appDbcontext;
             _passwordHasher = passwordHasher;
             _tokenService = tokenService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<ApiResponse<ResponseLogin>> Handle(LoginUserCommand request, CancellationToken cancellationToken)
         {
@@ -46,6 +48,14 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
             });
 
             await _appDbcontext.SaveChangesAsync();
+
+            _httpContextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", Uri.EscapeDataString(refreshToken), new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddDays(7)
+            });
 
             return ApiResponse<ResponseLogin>.Ok(new ResponseLogin { 
              AccessToken=  accesstoken,

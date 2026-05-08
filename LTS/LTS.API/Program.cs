@@ -2,7 +2,7 @@ using FluentValidation;
 using Hangfire;
 using Hangfire.MemoryStorage;
 using LTS.API.Common.Behaviors;
-using LTS.API.Common.DI;
+using LTS.API.Common.OTPGenerators.DI;
 using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.BackgroundJobs;
 using LTS.API.Infrastructure.Persistence;

@@ -53,7 +53,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CaseId");
 
-                    b.ToTable("Benches");
+                    b.ToTable("Benches", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Case", b =>
@@ -131,7 +131,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("DepartmentId");
 
-                    b.ToTable("Cases");
+                    b.ToTable("Cases", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.CaseDocument", b =>
@@ -191,7 +191,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CaseId");
 
-                    b.ToTable("CaseDocuments");
+                    b.ToTable("CaseDocuments", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.CaseNumberSequence", b =>
@@ -213,7 +213,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CaseNumberSequences");
+                    b.ToTable("CaseNumberSequences", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.CasePetitioner", b =>
@@ -235,7 +235,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.HasIndex("CaseId", "PetitionerId")
                         .IsUnique();
 
-                    b.ToTable("CasePetitioners");
+                    b.ToTable("CasePetitioners", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Court", b =>
@@ -263,7 +263,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courts");
+                    b.ToTable("Courts", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Department", b =>
@@ -294,7 +294,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Departments");
+                    b.ToTable("Departments", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Followup", b =>
@@ -346,7 +346,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CaseId");
 
-                    b.ToTable("Followups");
+                    b.ToTable("Followups", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Organization", b =>
@@ -418,7 +418,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.HasIndex("Slug")
                         .IsUnique();
 
-                    b.ToTable("Organizations");
+                    b.ToTable("Organizations", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Petitioner", b =>
@@ -478,7 +478,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.HasIndex("CNIC")
                         .IsUnique();
 
-                    b.ToTable("Petitioners");
+                    b.ToTable("Petitioners", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.RefreshToken", b =>
@@ -507,7 +507,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("RefreshTokens", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.User", b =>
@@ -576,7 +576,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OrganizationId");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Bench", b =>
