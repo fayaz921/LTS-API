@@ -28,9 +28,10 @@ namespace LTS.API.Features.Courts.Controllers
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update(UpdateCourtCommand command, CancellationToken ct)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Guid id, UpdateCourtCommand command, CancellationToken ct)
         {
+            command = command with { Id = id };
             var result = await _mediator.Send(command, ct);
             return StatusCode((int)result.Status, result);
         }

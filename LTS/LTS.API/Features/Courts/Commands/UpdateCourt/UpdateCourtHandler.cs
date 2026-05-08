@@ -17,7 +17,7 @@ namespace LTS.API.Features.Courts.Commands.UpdateCourt
 
         public async Task<ApiResponse<string>> Handle(UpdateCourtCommand request, CancellationToken ct)
         {
-            var court = await _context.Courts.FindAsync(new object[] { request.Id }, ct);
+            var court = await _context.Courts.FirstOrDefaultAsync(x => x.Id == request.Id && x.IsActive, ct);
 
             if (court == null)
                 return ApiResponse<string>.NotFound("Court not found");
@@ -30,7 +30,7 @@ namespace LTS.API.Features.Courts.Commands.UpdateCourt
 
             if (result > 0)
             {
-                return ApiResponse<string>.Ok(message: "Operation successful");
+                return ApiResponse<string>.Ok(message: "Court updated successfully");
             }
             else
             {

@@ -12,7 +12,8 @@ namespace LTS.API.Features.Courts.Mappings
                 Id = court.Id,
                 CourtName = court.CourtName,
                 AddressContact = court.AddressContact,
-                IsActive = court.IsActive
+                IsActive = court.IsActive,
+                CreatedAt = court.CreatedAt
             };
         }
     }
