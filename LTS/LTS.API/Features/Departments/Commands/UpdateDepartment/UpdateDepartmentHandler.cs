@@ -15,19 +15,19 @@ public class UpdateDepartmentHandler : IRequestHandler<UpdateDepartmentCommand, 
         if (department == null)
             return ApiResponse<string>.NotFound("Department not found");
 
+        if (!department.IsActive)
+            return ApiResponse<string>.Fail("Cannot update an inactive department");
+
         department.DepartmentName = request.DepartmentName;
         department.AddressContact = request.AddressContact;
-        department.IsActive = request.IsActive;
 
         var result = await _context.SaveChangesAsync(ct);
 
         if (result > 0)
         {
-            return ApiResponse<string>.Ok(message: "Operation successful");
+            return ApiResponse<string>.Ok(message: "Updated successfully");
         }
         else
-        {
             return ApiResponse<string>.Fail("Update failed");
-        }
     }
 }
