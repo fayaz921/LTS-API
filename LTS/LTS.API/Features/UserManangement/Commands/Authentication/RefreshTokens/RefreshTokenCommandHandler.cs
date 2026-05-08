@@ -11,13 +11,15 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens
         private readonly AppDbContext _db;
         private readonly ITokenService _tokenService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _config;
 
         public RefreshTokenCommandHandler(AppDbContext db,ITokenService tokenService,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor, IConfiguration config )
         {
             _db = db;
             _tokenService = tokenService;
             _httpContextAccessor = httpContextAccessor;
+            _config = config;
         }
 
         public async Task<ApiResponse<string>> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
@@ -27,13 +29,15 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens
             // Cookie se refreshToken lo
             var refreshToken = context.Request.Cookies["refreshToken"];
 
-            if (string.IsNullOrEmpty(refreshToken))
+            if (string.IsNullOrEmpty(refreshToken)) 
                 return ApiResponse<string>.Fail("Refresh token not found");
+
+            var decodedToken = Uri.UnescapeDataString(refreshToken); 
 
             // DB mein dhundo
             var stored = await _db.RefreshTokens
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Token == refreshToken && !r.IsRevoked, cancellationToken);
+                .FirstOrDefaultAsync(r => r.Token == decodedToken && !r.IsRevoked, cancellationToken);
 
             if (stored == null)
                 return ApiResponse<string>.Fail("Invalid refresh token");
@@ -58,15 +62,15 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens
                 Token = newRefreshToken,
                 ExpiryDate = DateTime.UtcNow.AddDays(7)
             }, cancellationToken);
-
             await _db.SaveChangesAsync(cancellationToken);
 
             // Naya refreshToken cookie mein
-            context.Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
+            var isSecure = _config.GetValue<bool>("CookieSettings:Secure");
+            context.Response.Cookies.Append("refreshToken", Uri.EscapeDataString(newRefreshToken), new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Secure = isSecure,
+                SameSite = SameSiteMode.None,
                 Expires = DateTime.UtcNow.AddDays(7)
             });
 

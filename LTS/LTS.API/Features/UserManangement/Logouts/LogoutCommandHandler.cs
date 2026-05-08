@@ -3,7 +3,7 @@ using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace LTS.API.Features.UserManangement.Lognouts
+namespace LTS.API.Features.UserManangement.Logouts
 {
     public class LogoutCommandHandler : IRequestHandler<LogoutCommand, ApiResponse<string>>
     {

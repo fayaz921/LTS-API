@@ -6,7 +6,7 @@ using LTS.API.Features.UserManangement.Commands.Authentication.ForgetPassword;
 using LTS.API.Features.UserManangement.Commands.Authentication.LoginUser;
 using LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens;
 using LTS.API.Features.UserManangement.Commands.Authentication.VerifyEmail;
-using LTS.API.Features.UserManangement.Lognouts;
+using LTS.API.Features.UserManangement.Logouts;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

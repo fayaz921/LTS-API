@@ -18,24 +18,24 @@ namespace LTS.API.Infrastructure.Services.Extensions
             //    app.MapOpenApi();
             //}
 
-            app.MapOpenApi();
-            app.MapScalarApiReference(options =>
-            {
-                options.Title = "LTS API";
-                options.Theme = ScalarTheme.DeepSpace;
-
-                // JWT Auth
-                options.AddHttpAuthentication("Bearer", scheme =>
+                app.MapOpenApi();
+                app.MapScalarApiReference(options =>
                 {
-                    scheme.Description = "Login karo, token lo, yahan paste karo";
+                    options.Title = "LTS API";
+                    options.Theme = ScalarTheme.DeepSpace;
+
+                    // JWT Auth
+                    options.AddHttpAuthentication("Bearer", scheme =>
+                    {
+                        scheme.Description = "Login and Paste the Jwt token";
+                    });
                 });
-            });
-            app.UseMiddleware<ExceptionHandlingMiddleware>();
-            app.UseHttpsRedirection();
-            app.UseCors("AllowFrontend");
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.MapControllers();
+                app.UseMiddleware<ExceptionHandlingMiddleware>();
+                app.UseHttpsRedirection();
+                app.UseCors("AllowFrontend");
+                app.UseAuthentication();
+                app.UseAuthorization();
+                app.MapControllers();
             return app;
         }
     }
