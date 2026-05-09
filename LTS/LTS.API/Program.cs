@@ -62,6 +62,9 @@ builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings")
 );
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings")
+);
 // Hangfire
 builder.Services.AddHangfire(config =>
     config.UseSimpleAssemblyNameTypeSerializer()
