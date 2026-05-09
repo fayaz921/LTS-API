@@ -1,7 +1,6 @@
 ﻿using LTS.API.Features.Courts.Commands.CreateCourt;
 using LTS.API.Features.Courts.Commands.DeleteCourt;
 using LTS.API.Features.Courts.Commands.UpdateCourt;
-using LTS.API.Features.Courts.Queries;
 using LTS.API.Features.Courts.Queries.GetAllCourts;
 using LTS.API.Features.Courts.Queries.GetCourtById;
 using MediatR;
@@ -44,9 +43,9 @@ namespace LTS.API.Features.Courts.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll(CancellationToken ct)
+        public async Task<IActionResult> GetAll([FromQuery] bool? isActive = null, CancellationToken ct = default)
         {
-            var result = await _mediator.Send(new GetAllCourtsQuery(), ct);
+            var result = await _mediator.Send(new GetAllCourtsQuery(isActive), ct);
             return StatusCode((int)result.Status, result);
         }
 

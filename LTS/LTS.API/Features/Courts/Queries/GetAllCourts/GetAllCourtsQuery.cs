@@ -4,5 +4,5 @@ using LTS.API.Features.Courts.DTOs;
 
 namespace LTS.API.Features.Courts.Queries.GetAllCourts
 {
-    public record GetAllCourtsQuery() : IRequest<ApiResponse<List<CourtDto>>>;
+    public record GetAllCourtsQuery(bool? IsActive = null) : IRequest<ApiResponse<List<CourtDto>>>;
 }
