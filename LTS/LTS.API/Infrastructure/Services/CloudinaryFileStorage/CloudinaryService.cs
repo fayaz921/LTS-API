@@ -84,14 +84,7 @@ namespace LTS.API.Infrastructure.Services.CloudinaryFileStorage
 
             if (uploadResult.StatusCode != System.Net.HttpStatusCode.OK)
                 throw new Exception($"Cloudinary file upload failed: {uploadResult.Error?.Message}");
-
-            // PDF ke liye URL mein fl_attachment add karo
             var url = uploadResult.SecureUrl.ToString();
-            if (Path.GetExtension(file.FileName).ToLowerInvariant() == ".pdf")
-            {
-                url = url.Replace("/raw/upload/", "/raw/upload/fl_attachment/");
-            }
-
             return new FileUploadResult
             {
                 Url = url,
