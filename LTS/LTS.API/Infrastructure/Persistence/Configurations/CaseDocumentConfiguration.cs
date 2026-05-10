@@ -20,7 +20,7 @@ public class CaseDocumentConfiguration : IEntityTypeConfiguration<CaseDocument>
 
         builder.Property(x => x.FileType)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(500);
 
         builder.Property(x => x.Remarks)
             .HasMaxLength(500);
