@@ -7,9 +7,11 @@ using LTS.API.Features.UserManangement.Commands.Authentication.LoginUser;
 using LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens;
 using LTS.API.Features.UserManangement.Commands.Authentication.VerifyEmail;
 using LTS.API.Features.UserManangement.Logouts;
+using LTS.API.Features.UserManangement.Queries.GetMe;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LTS.API.Features.UserManangement.Controller
 {
@@ -79,16 +81,13 @@ namespace LTS.API.Features.UserManangement.Controller
             var response = await _mediator.Send(new LogoutCommand());
             return StatusCode((int)response.Status, response);
         }
-
-        [Authorize(Roles =nameof(UserRole.User))]
-        [HttpGet("check")]
-        public IActionResult SecurePing()
+        [HttpGet("Me")]
+        //[Authorize]
+        public async Task<IActionResult> GetMe()
         {
-            return Ok(new
-            {
-                message = "You are authorized ",    
-                time = DateTime.UtcNow
-            });
+            var response = await _mediator.Send(new GetMeQuery());
+            return StatusCode((int)response.Status, response);
+
         }
     }
 }
