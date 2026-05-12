@@ -18,7 +18,12 @@ public class GetAllCourtsHandler : IRequestHandler<GetAllCourtsQuery, ApiRespons
 
     public async Task<ApiResponse<List<CourtDto>>> Handle(GetAllCourtsQuery request, CancellationToken ct)
     {
-        var courts = await _context.Courts
+        var query = _context.Courts.AsQueryable();
+
+        if (request.IsActive.HasValue)
+            query = query.Where(x => x.IsActive == request.IsActive.Value);
+
+        var courts = await query
             .Select(x => x.ToDto())
             .ToListAsync(ct);
 
