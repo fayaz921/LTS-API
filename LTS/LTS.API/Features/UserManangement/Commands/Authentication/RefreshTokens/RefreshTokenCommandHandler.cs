@@ -26,18 +26,17 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens
         {
             var context = _httpContextAccessor.HttpContext!;
 
-            // Cookie se refreshToken lo
             var refreshToken = context.Request.Cookies["refreshToken"];
 
             if (string.IsNullOrEmpty(refreshToken)) 
                 return ApiResponse<string>.Fail("Refresh token not found");
 
-            var decodedToken = Uri.UnescapeDataString(refreshToken); 
+            var decodedToken = Uri.UnescapeDataString(refreshToken);
 
-            // DB mein dhundo
             var stored = await _db.RefreshTokens
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(r => r.Token == decodedToken && !r.IsRevoked, cancellationToken);
+     .Include(r => r.User)
+     .ThenInclude(u => u.Organization) 
+     .FirstOrDefaultAsync(r => r.Token == decodedToken && !r.IsRevoked, cancellationToken);
 
             if (stored == null)
                 return ApiResponse<string>.Fail("Invalid refresh token");
@@ -64,7 +63,6 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens
             }, cancellationToken);
             await _db.SaveChangesAsync(cancellationToken);
 
-            // Naya refreshToken cookie mein
             var isSecure = _config.GetValue<bool>("CookieSettings:Secure");
             context.Response.Cookies.Append("refreshToken", Uri.EscapeDataString(newRefreshToken), new CookieOptions
             {
@@ -74,7 +72,6 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens
                 Expires = DateTime.UtcNow.AddDays(7)
             });
 
-            // Naya accessToken response body mein
             return ApiResponse<string>.Ok(newAccessToken, "Token refreshed successfully");
         }
     }
