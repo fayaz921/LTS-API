@@ -17,21 +17,20 @@ namespace LTS.API.Features.Followups
             _mediator = mediator;
         }
         [HttpPost]
-        public async Task<IActionResult> CreateFollowup([FromQuery] CreateFollowupCommand command)
+        public async Task<IActionResult> CreateFollowup([FromBody] CreateFollowupCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(result);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] GetFollowupsByCaseQuery query)
+        [HttpGet("{caseId}")]
+        public async Task<IActionResult> GetByCase(Guid caseId)
         {
-            var result = await _mediator.Send(query);
+            var result = await _mediator.Send(new GetFollowupsByCaseQuery(caseId));
             return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] UpdateFollowupCommand command)
+        public async Task<IActionResult> Update([FromBody] UpdateFollowupCommand command)
         {
             var result = await _mediator.Send(command);
             return Ok(result);
