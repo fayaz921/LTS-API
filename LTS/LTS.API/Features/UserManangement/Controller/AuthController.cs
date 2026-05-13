@@ -66,7 +66,6 @@ namespace LTS.API.Features.UserManangement.Controller
             return StatusCode((int)response.Status, response);
 
         }
-        // Cookie automatically aayegi — body mein kuch nahi chahiye
         [HttpPost("RefreshToken")]
         public async Task<IActionResult> RefreshToken()
         {
@@ -74,7 +73,6 @@ namespace LTS.API.Features.UserManangement.Controller
             return StatusCode((int)response.Status, response);
         }
 
-        // Cookie delete hogi — user logout
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
         {
@@ -82,7 +80,6 @@ namespace LTS.API.Features.UserManangement.Controller
             return StatusCode((int)response.Status, response);
         }
         [HttpGet("Me")]
-        //[Authorize]
         public async Task<IActionResult> GetMe()
         {
             var response = await _mediator.Send(new GetMeQuery());
