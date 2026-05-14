@@ -1,4 +1,5 @@
 ﻿using LTS.API.Features.UserManangement.Queries.GetAllOrganizations;
+using LTS.API.Features.UserManangement.Queries.GetDashboardStats;
 using LTS.API.Features.UserManangement.Queries.GetOrganizationById;
 using LTS.API.Features.UserManangement.Queries.GetSubscriptionOrganizations;
 using LTS.API.Features.UserManangement.Queries.GetTrialOrganizations;
@@ -9,12 +10,18 @@ namespace LTS.API.Features.UserManangement.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrganizationController : ControllerBase
+    public class SuperAdminController : ControllerBase
     {
         private readonly IMediator _mediator;
-        public OrganizationController(IMediator mediator)
+        public SuperAdminController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+        [HttpGet("dashboard-stats")]
+        public async Task<IActionResult> GetDashboardStats()
+        {
+            var result = await _mediator.Send(new GetDashboardStatsQuery());
+            return StatusCode((int)result.Status, result);
         }
         [HttpGet("all")]
         public async Task<IActionResult> GetAll()

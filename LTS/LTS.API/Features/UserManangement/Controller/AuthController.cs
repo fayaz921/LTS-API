@@ -1,6 +1,4 @@
-﻿using CloudinaryDotNet.Actions;
-using LTS.API.Domain.Enums;
-using LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP;
+﻿using LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP;
 using LTS.API.Features.UserManangement.Commands.Authentication.CreateUser;
 using LTS.API.Features.UserManangement.Commands.Authentication.ForgetPassword;
 using LTS.API.Features.UserManangement.Commands.Authentication.LoginUser;
@@ -9,9 +7,7 @@ using LTS.API.Features.UserManangement.Commands.Authentication.VerifyEmail;
 using LTS.API.Features.UserManangement.Logouts;
 using LTS.API.Features.UserManangement.Queries.GetMe;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 
 namespace LTS.API.Features.UserManangement.Controller
 {

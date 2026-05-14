@@ -23,7 +23,6 @@ namespace LTS.API.Features.UserManangement.Logouts
 
             if (!string.IsNullOrEmpty(refreshToken))
             {
-                // DB mein revoke karo
                 var stored = await _db.RefreshTokens
                     .FirstOrDefaultAsync(r => r.Token == refreshToken && !r.IsRevoked, cancellationToken);
 
@@ -33,7 +32,6 @@ namespace LTS.API.Features.UserManangement.Logouts
                     await _db.SaveChangesAsync(cancellationToken);
                 }
 
-                // Cookie delete karo
                 context.Response.Cookies.Delete("refreshToken");
             }
 
