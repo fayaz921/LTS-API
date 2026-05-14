@@ -2,7 +2,6 @@
 using LTS.API.Features.UserManangement.Commands.UpdateProfilePictures;
 using LTS.API.Features.UserManangement.Queries.GetProfiles;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LTS.API.Features.UserManangement.Controller

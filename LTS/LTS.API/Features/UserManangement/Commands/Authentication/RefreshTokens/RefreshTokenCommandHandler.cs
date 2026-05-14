@@ -48,10 +48,8 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.RefreshTokens
                 return ApiResponse<string>.Fail("Session expired, please login again");
             }
 
-            // Purana revoke karo (Token Rotation)
             stored.IsRevoked = true;
 
-            // Naya refresh token
             var newRefreshToken = _tokenService.GenerateRefreshToken();
             var newAccessToken = _tokenService.GenerateToken(stored.User);
 

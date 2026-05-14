@@ -8,6 +8,7 @@ using LTS.API.Infrastructure.BackgroundJobs;
 using LTS.API.Infrastructure.Persistence;
 using LTS.API.Infrastructure.Persistence.Extensions;
 using LTS.API.Infrastructure.Services.CloudinaryFileStorage;
+using LTS.API.Infrastructure.Services.CurrentUserServices;
 using LTS.API.Infrastructure.Services.Email;
 using LTS.API.Infrastructure.Services.Extensions;
 using LTS.API.Infrastructure.Services.JWT;
@@ -59,6 +60,7 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 builder.Services.Configure<EmailSettings>(
     builder.Configuration.GetSection("EmailSettings")
 );
