@@ -1,4 +1,6 @@
-﻿namespace LTS.API.Features.UserManangement.DTOs
+﻿using LTS.API.Domain.Enums;
+
+namespace LTS.API.Features.UserManangement.DTOs
 {
     public class GetMeDto
     {
@@ -9,5 +11,6 @@
         public Guid OrganizationId { get; set; }
         public string OrganizationName { get; set; } = string.Empty;
         public string OrganizationPlan { get; set; } = string.Empty;
+        public string Role { get; set; }
     }
 }

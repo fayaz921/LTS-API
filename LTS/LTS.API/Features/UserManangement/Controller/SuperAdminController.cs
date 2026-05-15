@@ -1,15 +1,19 @@
-﻿using LTS.API.Features.UserManangement.Queries.GetAllOrganizations;
+﻿using LTS.API.Domain.Enums;
+using LTS.API.Features.UserManangement.Queries.GetAllOrganizations;
 using LTS.API.Features.UserManangement.Queries.GetDashboardStats;
 using LTS.API.Features.UserManangement.Queries.GetOrganizationById;
 using LTS.API.Features.UserManangement.Queries.GetSubscriptionOrganizations;
 using LTS.API.Features.UserManangement.Queries.GetTrialOrganizations;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LTS.API.Features.UserManangement.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = nameof(UserRole.SuperAdmin))]
+
     public class SuperAdminController : ControllerBase
     {
         private readonly IMediator _mediator;
