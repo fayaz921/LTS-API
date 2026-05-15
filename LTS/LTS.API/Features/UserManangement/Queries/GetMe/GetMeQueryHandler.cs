@@ -41,6 +41,7 @@ namespace LTS.API.Features.UserManangement.Queries.GetMe
                 ProfileImage = user.ProfileImageUrl,
                 OrganizationId = user.OrganizationId,
                 OrganizationName = user.Organization.OrganizationName,
+                Role = user.Role.ToString(),
                 OrganizationPlan = user.Organization.Plan.ToString(),
             });
         

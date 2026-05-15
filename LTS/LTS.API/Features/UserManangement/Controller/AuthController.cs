@@ -1,4 +1,5 @@
-﻿using LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP;
+﻿using LTS.API.Domain.Enums;
+using LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP;
 using LTS.API.Features.UserManangement.Commands.Authentication.CreateUser;
 using LTS.API.Features.UserManangement.Commands.Authentication.ForgetPassword;
 using LTS.API.Features.UserManangement.Commands.Authentication.LoginUser;
@@ -7,6 +8,7 @@ using LTS.API.Features.UserManangement.Commands.Authentication.VerifyEmail;
 using LTS.API.Features.UserManangement.Logouts;
 using LTS.API.Features.UserManangement.Queries.GetMe;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LTS.API.Features.UserManangement.Controller
@@ -76,6 +78,7 @@ namespace LTS.API.Features.UserManangement.Controller
             return StatusCode((int)response.Status, response);
         }
         [HttpGet("Me")]
+        [Authorize]
         public async Task<IActionResult> GetMe()
         {
             var response = await _mediator.Send(new GetMeQuery());
