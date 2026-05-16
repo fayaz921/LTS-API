@@ -5,28 +5,55 @@ using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace LTS.API.Features.Courts.Queries.GetAllCourts;
-
-public class GetAllCourtsHandler : IRequestHandler<GetAllCourtsQuery, ApiResponse<List<CourtDto>>>
+namespace LTS.API.Features.Courts.Queries.GetAllCourts
 {
-    private readonly AppDbContext _context;
+    // ─────────────────────────────────────────────────────────────
+    // Handler — Skip/Take pagination, TotalCount from DB
+    // ─────────────────────────────────────────────────────────────
 
-    public GetAllCourtsHandler(AppDbContext context)
+    public class GetAllCourtsHandler
+        : IRequestHandler<GetAllCourtsQuery, ApiResponse<PaginatedResponse<CourtDto>>>
     {
-        _context = context;
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<ApiResponse<List<CourtDto>>> Handle(GetAllCourtsQuery request, CancellationToken ct)
-    {
-        var query = _context.Courts.AsQueryable();
+        public GetAllCourtsHandler(AppDbContext context)
+        {
+            _context = context;
+        }
 
-        if (request.IsActive.HasValue)
-            query = query.Where(x => x.IsActive == request.IsActive.Value);
+        public async Task<ApiResponse<PaginatedResponse<CourtDto>>> Handle(
+            GetAllCourtsQuery   request,
+            CancellationToken   ct)
+        {
+            // ── Validate page params ──────────────────────────────
+            var pageNumber = request.PageNumber < 1 ? 1  : request.PageNumber;
+            var pageSize   = request.PageSize   < 1 ? 10 : request.PageSize > 100 ? 100 : request.PageSize;
 
-        var courts = await query
-            .Select(x => x.ToDto())
-            .ToListAsync(ct);
+            // ── Base query ────────────────────────────────────────
+            var query = _context.Courts.AsQueryable();
 
-        return ApiResponse<List<CourtDto>>.Ok(courts);
+            if (request.IsActive.HasValue)
+                query = query.Where(x => x.IsActive == request.IsActive.Value);
+
+            // ── Total count BEFORE pagination ─────────────────────
+            var totalCount = await query.CountAsync(ct);
+
+            // ── Apply pagination ──────────────────────────────────
+            var items = await query
+                .OrderByDescending(x => x.CreatedAt)          // newest first
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(x => x.ToDto())
+                .ToListAsync(ct);
+
+            // ── Build paginated response ──────────────────────────
+            var paginated = PaginatedResponse<CourtDto>.Create(
+                items,
+                totalCount,
+                pageNumber,
+                pageSize);
+
+            return ApiResponse<PaginatedResponse<CourtDto>>.Ok(paginated);
+        }
     }
 }
