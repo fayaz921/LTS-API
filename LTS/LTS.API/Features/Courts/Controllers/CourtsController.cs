@@ -43,9 +43,11 @@ namespace LTS.API.Features.Courts.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] bool? isActive = null, CancellationToken ct = default)
+        public async Task<IActionResult> GetAll([FromQuery] bool? isActive = null,
+            [FromQuery] int pageNumber = 1,[FromQuery] int pageSize = 10, CancellationToken ct = default)
         {
-            var result = await _mediator.Send(new GetAllCourtsQuery(isActive), ct);
+            var result = await _mediator.Send(
+                new GetAllCourtsQuery(isActive, pageNumber, pageSize), ct);
             return StatusCode((int)result.Status, result);
         }
 
