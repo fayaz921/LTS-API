@@ -17,31 +17,34 @@ namespace LTS.API.Features.Followups
             _mediator = mediator;
         }
         [HttpPost]
-        public async Task<IActionResult> CreateFollowup([FromQuery] CreateFollowupCommand command)
+        public async Task<IActionResult> CreateFollowup( [FromBody] CreateFollowupCommand command,  CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return StatusCode((int)result.Status, result);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] GetFollowupsByCaseQuery query)
+        [HttpGet("{caseId}")]
+        public async Task<IActionResult> GetByCaseId( Guid caseId, CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(query);
-            return Ok(result);
+            var result = await _mediator.Send( new GetFollowupsByCaseQuery(caseId), cancellationToken);
+            return StatusCode((int)result.Status, result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update([FromQuery] UpdateFollowupCommand command)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update( Guid id, [FromBody] UpdateFollowupCommand command,  CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            command = command with { FollowupId = id };
+            var result = await _mediator.Send(command, cancellationToken);
+
+            return StatusCode((int)result.Status, result);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete( Guid id,  CancellationToken cancellationToken)
         {
-            var result = await _mediator.Send(new DeleteFollowupCommand(id));
-            return Ok(result);
+            var result = await _mediator.Send(new DeleteFollowupCommand(id), cancellationToken);
+            return StatusCode((int)result.Status, result);
         }
     }
 }

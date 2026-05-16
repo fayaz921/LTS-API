@@ -6,18 +6,18 @@ namespace LTS.API.Features.Followups.Commands.CreateFollowup
     {
         public CreateFollowupValidator()
         {
-            //RuleFor(x => x.CaseId)
-            //    .NotEmpty()
-            //    .WithMessage("CaseId is required.");
+            RuleFor(x => x.CaseId)
+                .NotEmpty()
+                .WithMessage("CaseId is required.");
 
-            //RuleFor(x => x.HearingDate)
-            //    .NotEmpty()
-            //    .WithMessage("HearingDate is required.");
+            RuleFor(x => x.HearingDate)
+                .NotEmpty()
+                .WithMessage("HearingDate is required.");
 
-            //RuleFor(x => x.NextHearingDate)
-            //    .GreaterThan(x => x.HearingDate)
-            //    .When(x => x.NextHearingDate.HasValue)
-            //    .WithMessage("NextHearingDate must be after HearingDate.");
+            RuleFor(x => x.NextHearingDate)
+                .GreaterThan(x => x.HearingDate)
+                .When(x => x.NextHearingDate.HasValue)
+                .WithMessage("NextHearingDate must be after HearingDate.");
         }
     }
 }
