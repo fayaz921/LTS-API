@@ -19,7 +19,7 @@ namespace LTS.API.Features.Followups.Commands.DeleteFollowup
             var followup = await _context.Followups.FindAsync(request.id);
 
             if (followup is null)
-                throw new NotFoundException($"Followup with Id {request.id} not found.");
+                return ApiResponse<string>.NotFound($"Followup with Id {request.id} not found.");
 
             _context.Followups.Remove(followup);
             await _context.SaveChangesAsync(cancellationToken);
