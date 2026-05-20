@@ -78,9 +78,7 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 app.UseCors("AllowFrontend");
-// All middleware (Swagger, Auth, Controllers, etc.)
 app.MyMiddleWare();
-// Hangfire Dashboard
 app.UseHangfireDashboard();
 
 RecurringJob.AddOrUpdate<HearingAlertJob>(
