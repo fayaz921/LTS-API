@@ -13,6 +13,7 @@ namespace LTS.API.Domain.Entities
         public DateTime? LastLoginAt { get; set; }
         public string Otp { get; set; } = string.Empty;
         public string ProfileImageUrl { get; set; } = string.Empty;
+        public string ProfileImagePublicId { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
         public DateTime? OTPExpiry { get; set; }
         public Organization Organization { get; set; } = null!;

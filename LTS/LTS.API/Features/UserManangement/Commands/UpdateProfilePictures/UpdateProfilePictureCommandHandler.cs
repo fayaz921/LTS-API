@@ -33,6 +33,10 @@ namespace LTS.API.Features.UserManangement.Commands.UpdateProfilePictures
 
             if (user == null)
                 return ApiResponse<string>.Fail("User not found");
+            if (!string.IsNullOrEmpty(user.ProfileImagePublicId))
+            {
+                await _cloudinary.DeleteFileAsync(user.ProfileImagePublicId, "image/");
+            }
 
             var uploadResult = await _cloudinary.UploadFileAsync(request.File);
 
