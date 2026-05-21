@@ -15,8 +15,16 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP
         public async Task<ApiResponse<string>> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
         {
             var user = await _context.Users
-         .Include(u => u.Organization)
-         .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
+                .AsNoTracking()
+                .Where(u=>u.Email==request.Email)
+                .Select(u => new
+            {
+                u.Id,
+                u.IsActive,
+                u.Otp,
+                u.OTPExpiry,
+                u.OrganizationId
+            }).FirstOrDefaultAsync(cancellationToken);
 
             if (user is null)
                 return ApiResponse<string>.Fail("User not found");
@@ -29,26 +37,50 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.ConfirmOTP
 
             if (user.OTPExpiry == null || user.OTPExpiry < DateTime.UtcNow)
                 return ApiResponse<string>.Fail("OTP expired. Please request a new one.");
+            await using var transaction =
+                            await _context.Database.BeginTransactionAsync(cancellationToken);
 
-            if (user.Organization is null)
-                return ApiResponse<string>.Fail("Organization not found");
+            try
+            {
+                // USER ACTIVATE
+                await _context.Users
+                    .Where(x => x.Id == user.Id)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(x => x.IsActive, true)
+                        .SetProperty(x => x.Otp, string.Empty)
+                        .SetProperty(x => x.OTPExpiry, (DateTime?)null)
+                        .SetProperty(x => x.UpdatedAt, DateTime.UtcNow),
+                        cancellationToken);
 
-            //  Activate user
-            user.IsActive = true;
-            user.Otp = string.Empty;
-            user.OTPExpiry = null;
-            user.UpdatedAt = DateTime.UtcNow;
+                // ORGANIZATION ACTIVATE 
+                var affectedRows = await _context.Organizations
+                    .Where(x => x.Id == user.OrganizationId)
+                    .ExecuteUpdateAsync(s => s
+                        .SetProperty(x => x.IsActive, true)
+                        .SetProperty(x => x.IsTrialActive, true)
+                        .SetProperty(x => x.TrialStartDate, DateTime.UtcNow)
+                        .SetProperty(x => x.TrialEndDate, DateTime.UtcNow.AddDays(7))
+                        .SetProperty(x => x.UpdatedAt, DateTime.UtcNow),
+                        cancellationToken);
 
-            // Activate organization
-            user.Organization.IsActive = true;
-            user.Organization.IsTrialActive = true;
-            user.Organization.TrialStartDate = DateTime.UtcNow;
-            user.Organization.TrialEndDate = DateTime.UtcNow.AddDays(7);
-            user.Organization.UpdatedAt = DateTime.UtcNow;
+                // ORGANIZATION NOT FOUND
+                if (affectedRows == 0)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    return ApiResponse<string>.Fail("Organization not found");
+                }
 
-            await _context.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
 
-            return ApiResponse<string>.Ok( default!, "Email verified successfully. You can now login.");
+                return ApiResponse<string>.Ok(
+                    default!,
+                    "Email verified successfully. You can now login.");
+            }
+            catch
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return ApiResponse<string>.Fail("Something went wrong.");
+            }
         }
     }
 }
