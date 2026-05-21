@@ -4,7 +4,9 @@ using MediatR;
 
 namespace LTS.API.Features.UserManangement.Queries.GetAllOrganizations
 {
-    public class GetAllOrganizationsQuery:IRequest<ApiResponse<List<OrganizationDto>>>
+    public class GetAllOrganizationsQuery: IRequest<ApiResponse<PaginatedResponse<OrganizationDto>>>
     {
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 5;
     }
 }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Queries.GetAllOrganizations
 {
-    public class GetAllOrganizationsQueryHandler : IRequestHandler<GetAllOrganizationsQuery, ApiResponse<List<OrganizationDto>>>
+    public class GetAllOrganizationsQueryHandler : IRequestHandler<GetAllOrganizationsQuery, ApiResponse<PaginatedResponse<OrganizationDto>>>
     {
         private readonly AppDbContext _context;
 
@@ -15,9 +15,16 @@ namespace LTS.API.Features.UserManangement.Queries.GetAllOrganizations
             _context = context;
         }
 
-        public async Task<ApiResponse<List<OrganizationDto>>> Handle(GetAllOrganizationsQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<PaginatedResponse<OrganizationDto>>> Handle(GetAllOrganizationsQuery request, CancellationToken cancellationToken)
         {
-            var orgs = await _context.Organizations
+            var query = _context.Organizations.AsQueryable();
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(o => o.CreatedAt)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .Select(o => new OrganizationDto
                 {
                     Id = o.Id,
@@ -38,7 +45,11 @@ namespace LTS.API.Features.UserManangement.Queries.GetAllOrganizations
                 })
                 .ToListAsync(cancellationToken);
 
-            return ApiResponse<List<OrganizationDto>>.Ok(orgs, "All organizations fetched successfully");
+            var paginated = PaginatedResponse<OrganizationDto>.Create(
+                items, totalCount, request.PageNumber, request.PageSize);
+
+            return ApiResponse<PaginatedResponse<OrganizationDto>>.Ok(
+                paginated, "All organizations fetched successfully");
         }
     }
 }

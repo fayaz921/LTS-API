@@ -29,7 +29,6 @@ namespace LTS.API.Features.UserManangement.Commands.UpdateProfies
             user.Location = request.Location;
             user.UpdatedAt = DateTime.UtcNow;
 
-            user.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync(cancellationToken);
 
