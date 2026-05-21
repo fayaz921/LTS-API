@@ -6,13 +6,13 @@ namespace LTS.API.Features.UserManangement.Mappers
 {
     public static class CreateUserMappings
     {
-        public static Organization ToOrganization(this CreateUserCommand request)
+        public static Organization ToOrganization(this string organizationName)
         {
             return new Organization
             {
                 Id = Guid.NewGuid(),
-                OrganizationName = request.OrganizationName,
-                Slug = request.OrganizationName.ToLower().Trim().Replace(" ", "-"),
+                OrganizationName = organizationName,
+                Slug = organizationName.ToLower().Trim().Replace(" ", "-"),
                 Plan = SubscriptionPlan.Free,
 
                 IsTrialActive = true,

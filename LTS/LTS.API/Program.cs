@@ -1,6 +1,6 @@
 using FluentValidation;
 using Hangfire;
-using Hangfire.MemoryStorage;
+using Hangfire.PostgreSql;
 using LTS.API.Common.Behaviors;
 using LTS.API.Common.OTPGenerators.DI;
 using LTS.API.Domain.Entities;
@@ -71,16 +71,16 @@ builder.Services.Configure<CloudinarySettings>(
 builder.Services.AddHangfire(config =>
     config.UseSimpleAssemblyNameTypeSerializer()
           .UseRecommendedSerializerSettings()
-          .UseMemoryStorage());
+          .UsePostgreSqlStorage(options =>
+              options.UseNpgsqlConnection(
+                  builder.Configuration.GetConnectionString("DefaultConnection"))));
 
 builder.Services.AddHangfireServer();
 builder.Services.AddHttpContextAccessor();
-
 var app = builder.Build();
 app.UseCors("AllowFrontend");
 app.MyMiddleWare();
 app.UseHangfireDashboard();
-
 RecurringJob.AddOrUpdate<HearingAlertJob>(
     "hearing-alert-job",
     job => job.ExecuteAsync(),
