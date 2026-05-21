@@ -41,6 +41,7 @@ namespace LTS.API.Features.UserManangement.Commands.UpdateProfilePictures
             var uploadResult = await _cloudinary.UploadFileAsync(request.File);
 
             user.ProfileImageUrl = uploadResult.Url;
+            user.ProfileImagePublicId = uploadResult.PublicId;
             user.UpdatedAt = DateTime.UtcNow;
 
             await _db.SaveChangesAsync(cancellationToken);

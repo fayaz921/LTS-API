@@ -12,7 +12,7 @@ namespace LTS.API.Features.UserManangement.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = nameof(UserRole.SuperAdmin))]
+    //[Authorize(Roles = nameof(UserRole.SuperAdmin))]
 
     public class SuperAdminController : ControllerBase
     {
@@ -28,9 +28,14 @@ namespace LTS.API.Features.UserManangement.Controller
             return StatusCode((int)result.Status, result);
         }
         [HttpGet("all")]
-        public async Task<IActionResult> GetAll()
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
         {
-            var result = await _mediator.Send(new GetAllOrganizationsQuery());
+            var result = await _mediator.Send(new GetAllOrganizationsQuery
+            {
+                PageNumber = page,
+                PageSize = pageSize
+            });
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
