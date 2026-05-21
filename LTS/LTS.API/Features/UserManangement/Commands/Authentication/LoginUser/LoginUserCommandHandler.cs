@@ -36,25 +36,28 @@ namespace LTS.API.Features.UserManangement.Commands.Authentication.LoginUser
 
             if (result == PasswordVerificationResult.Failed)
                 return ApiResponse<ResponseLogin>.Fail("Invalid email or password");
+            var utcNow = DateTime.UtcNow;
 
             var accesstoken = _tokenService.GenerateToken(user);
             var refreshToken = _tokenService.GenerateRefreshToken();
+            var hashedToken = _tokenService.HashToken(refreshToken);
 
             await _appDbcontext.RefreshTokens.AddAsync(new RefreshToken
             {
                 UserId = user.Id,
-                Token = refreshToken,
-                ExpiryDate = DateTime.UtcNow.AddDays(7)
-            });
+                Token = hashedToken,
+                ExpiryDate = utcNow.AddDays(7)
+            },cancellationToken);
 
-            await _appDbcontext.SaveChangesAsync();
+            await _appDbcontext.SaveChangesAsync(cancellationToken);
 
             _httpContextAccessor.HttpContext!.Response.Cookies.Append("refreshToken", Uri.EscapeDataString(refreshToken), new CookieOptions
             {
                 HttpOnly = true,
                 Secure = true,
                 SameSite = SameSiteMode.None,
-                Expires = DateTime.UtcNow.AddDays(7)
+                Expires = utcNow.AddDays(7),
+                MaxAge = TimeSpan.FromDays(7)
             });
 
             return ApiResponse<ResponseLogin>.Ok(new ResponseLogin { 

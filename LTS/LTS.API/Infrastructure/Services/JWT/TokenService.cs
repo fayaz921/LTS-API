@@ -8,10 +8,18 @@ using System.Text;
 
 namespace LTS.API.Infrastructure.Services.JWT
 {
-    public class TokenService(IOptions<JwtSettings> jwtSettings) : ITokenService
+    public class TokenService: ITokenService
     {
-        private readonly JwtSettings _jwtSettings = jwtSettings.Value;
+        private readonly JwtSettings _jwtSettings;
+        private static readonly JwtSecurityTokenHandler Handler = new();
 
+        public TokenService(IOptions<JwtSettings> jwtSettings)
+        {
+            _jwtSettings = jwtSettings.Value;
+
+            if (_jwtSettings.Secret.Length < 32)
+                throw new Exception("JWT Secret must be at least 32 characters");
+        }
         public string GenerateToken(User user)
         {
             var claims = new List<Claim>
@@ -20,7 +28,8 @@ namespace LTS.API.Infrastructure.Services.JWT
             new(ClaimTypes.Name,           user.Name),
             new(ClaimTypes.Email,          user.Email),
             new(ClaimTypes.Role,           user.Role.ToString()),
-            new("OrganizationId",          user.OrganizationId.ToString())
+            new("OrganizationId",          user.OrganizationId.ToString()),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
             var key = new SymmetricSecurityKey(
@@ -36,7 +45,7 @@ namespace LTS.API.Infrastructure.Services.JWT
                 expires: DateTime.UtcNow.AddDays(_jwtSettings.ExpiryInDays),
                 signingCredentials: credentials);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return Handler.WriteToken(token);
         }
         public string GenerateRefreshToken()
         {
@@ -44,6 +53,12 @@ namespace LTS.API.Infrastructure.Services.JWT
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(bytes);
             return Convert.ToBase64String(bytes);
+        }
+        public string HashToken(string token)
+        {
+            var hash = SHA256.HashData(
+                Encoding.UTF8.GetBytes(token));
+            return Convert.ToBase64String(hash);
         }
     }
 }
