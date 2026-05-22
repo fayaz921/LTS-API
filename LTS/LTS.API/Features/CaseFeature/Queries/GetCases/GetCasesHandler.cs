@@ -1,4 +1,5 @@
-﻿using LTS.API.Common.Response;
+﻿using CloudinaryDotNet.Core;
+using LTS.API.Common.Response;
 using LTS.API.Domain.Entities;
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
@@ -42,23 +43,31 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
                 .OrderByDescending(c => c.CreatedAt);
 
         private static async Task<List<GetCaseDto>> FetchPageAsync(
-            IQueryable<Case> query, GetAllCasesQuery request, CancellationToken ct) =>
-            await query
-                .Skip((request.Page - 1) * request.PageSize)
-                .Take(request.PageSize)
-                .Select(c => new GetCaseDto(
-                    c.Id,
-                    c.CaseNo,
-                    c.Title,
-                    c.Subject,
-                    c.DAG,
-                    c.Status.ToString(),
-                    c.DateInstitution,
-                    c.Court != null ? c.Court.CourtName : "N/A",
-                    c.Department != null ? c.Department.DepartmentName : "N/A",
-                    c.CasePetitioners.Select(cp => cp.Petitioner.Name).ToList()
-                ))
-                .ToListAsync(ct);
+               IQueryable<Case> query, GetAllCasesQuery request, CancellationToken ct) =>
+               await query
+                   .Skip((request.Page - 1) * request.PageSize)
+                   .Take(request.PageSize)
+                   .Select(c => new GetCaseDto(
+                       c.Id,
+                       c.CaseNo,
+                       c.Title,
+                       c.Subject,
+                       c.DAG,
+                       c.Status.ToString(),
+                       c.DateInstitution,
+                       c.Court != null ? c.Court.CourtName : "N/A",
+                       c.Department != null ? c.Department.DepartmentName : "N/A",
+                       c.CasePetitioners.Select(cp => new PetitionerDetailDto(
+                           cp.Petitioner.Id,
+                           cp.Petitioner.Name,
+                           cp.Petitioner.CNIC,
+                           cp.Petitioner.Email,
+                           cp.Petitioner.Phone
+                       )).ToList()
+                   ))
+                   .ToListAsync(ct);
+                  
+
 
         private static PagedResult<GetCaseDto> ToPagedResult(
             List<GetCaseDto> cases, int totalCount, GetAllCasesQuery request) =>
@@ -66,7 +75,7 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
             {
                 Items = cases,
                 TotalCount = totalCount,
-                Page = request.Page,
+                PageNumber = request.Page,
                 PageSize = request.PageSize
             };
         #endregion

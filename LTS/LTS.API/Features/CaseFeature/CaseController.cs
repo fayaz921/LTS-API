@@ -18,7 +18,6 @@ namespace LTS.API.Features.CaseFeature
         [HttpPost("Create")]
         public async Task<IActionResult> CreateCase(CreateCaseCommand request, CancellationToken ct)
         {
-            request.OrganizationId = Guid.Parse("8f2d5e1a-c4b3-4927-90a6-7f8e3b1d5c4a");
             var result = await _mediator.Send(request, ct);
             return StatusCode((int)result.Status, result);
         }
@@ -45,6 +44,7 @@ namespace LTS.API.Features.CaseFeature
         {
             var result = await _mediator.Send(new GetAllCasesQuery
             {
+                OrganizationId = Guid.Parse(User.FindFirst("OrganizationId")?.Value!),
                 Page = page,
                 PageSize = pageSize
             });
@@ -58,12 +58,37 @@ namespace LTS.API.Features.CaseFeature
             return StatusCode((int)result.Status, result);
         }
 
-        [HttpPost("searchCase")]
-        public async Task<IActionResult> SearchCases(SearchCasesQuery request, CancellationToken ct)
+        /// <summary>
+        /// Search cases by CaseNo, Title, or Petitioner CNIC
+        /// </summary>
+        /// <param name="query">Search term (CaseNo, Title, or CNIC)</param>
+        /// <param name="pageNumber">Page number (default 1)</param>
+        /// <param name="pageSize">Records per page (default 20)</param>
+        /// <param name="status">Filter by status (Pending/Finalized)</param>
+        /// <param name="fromDate">Filter from date</param>
+        /// <param name="toDate">Filter to date</param>
+        [HttpGet("search")]
+        public async Task<IActionResult> Search(
+            [FromQuery] string? query,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 20,
+            [FromQuery] string? status = null,
+            [FromQuery] string? fromDate = null,
+            [FromQuery] string? toDate = null)
         {
-            request.OrganizationId = Guid.Parse("8f2d5e1a-c4b3-4927-90a6-7f8e3b1d5c4a"); // later we update it 
-            var result = await _mediator.Send(request, ct);
+            var searchQuery = new SearchCasesQuery
+            {
+                SearchTerm = query,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Status = status,
+                DateFrom = string.IsNullOrEmpty(fromDate) ? null : DateTime.Parse(fromDate),
+                DateTo = string.IsNullOrEmpty(toDate) ? null : DateTime.Parse(toDate)
+            };
+
+            var result = await _mediator.Send(searchQuery);
             return StatusCode((int)result.Status, result);
         }
     }
 }
+

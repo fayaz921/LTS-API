@@ -11,8 +11,8 @@ namespace LTS.API.Features.Followups.Commands
             {
                 Id = Guid.NewGuid(),
                 CaseId = command.CaseId,
-                HearingDate = command.HearingDate,
-                NextHearingDate = command.NextHearingDate,
+                HearingDate = DateTime.SpecifyKind(command.HearingDate, DateTimeKind.Utc),
+                NextHearingDate = command.NextHearingDate.HasValue ? DateTime.SpecifyKind(command.NextHearingDate.Value, DateTimeKind.Utc) : null,
                 InterimOrder = command.InterimOrder,
                 Decision = command.Decision,
                 Remarks = command.Remarks,
