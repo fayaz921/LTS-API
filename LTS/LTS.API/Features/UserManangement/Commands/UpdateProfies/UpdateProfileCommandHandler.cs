@@ -1,9 +1,7 @@
-﻿using CloudinaryDotNet.Core;
-using LTS.API.Common.Response;
+﻿using LTS.API.Common.Response;
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Npgsql.Replication.PgOutput.Messages;
 using System.Security.Claims;
 
 namespace LTS.API.Features.UserManangement.Commands.UpdateProfies
@@ -12,25 +10,21 @@ namespace LTS.API.Features.UserManangement.Commands.UpdateProfies
     {
         public async Task<ApiResponse<string>> Handle(UpdateProfileCommand request, CancellationToken cancellationToken)
         {
-            var userId = _httpContextAccessor.HttpContext?
+            var userIdstring = _httpContextAccessor.HttpContext?
             .User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
+            if (!Guid.TryParse(userIdstring, out var userId))
                 return ApiResponse<string>.Fail("Unauthorized");
-
-            var user = await _db.Users
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId), cancellationToken);
-
-            if (user == null)
+            var utcNow = DateTime.UtcNow;
+            var affectedRows = await _db.Users
+                .Where(x => x.Id == userId)
+                .ExecuteUpdateAsync(s => s
+                    .SetProperty(x => x.Name, request.Name)
+                    .SetProperty(x => x.Phonenumber, request.Phone)
+                    .SetProperty(x => x.Location, request.Location)
+                    .SetProperty(x => x.UpdatedAt, utcNow),
+                    cancellationToken);
+            if (affectedRows == 0)
                 return ApiResponse<string>.Fail("User not found");
-
-            user.Name = request.Name;
-            user.Phonenumber = request.Phone;
-            user.Location = request.Location;
-            user.UpdatedAt = DateTime.UtcNow;
-
-
-            await _db.SaveChangesAsync(cancellationToken);
 
             return ApiResponse<string>.Ok(default!,"Profile updated successfully");
         }
