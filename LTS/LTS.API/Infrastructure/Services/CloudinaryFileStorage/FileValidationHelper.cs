@@ -23,21 +23,23 @@
         public static bool IsDocument(string extension)
             => DocumentExtensions.Contains(extension);
 
-        public static void Validate(IFormFile file)
+        public static FileUploadResult Validate(IFormFile file)
         {
             if (file == null || file.Length == 0)
-                throw new Exception("No file uploaded.");
+                return new FileUploadResult { IsSuccess = false, Message = "No file uploaded." };
 
             var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
 
             if (!IsImage(extension) && !IsDocument(extension))
-                throw new Exception("Invalid file type.");
+                return new FileUploadResult { IsSuccess = false, Message = "Invalid file type." };
 
             if (IsImage(extension) && file.Length > MaxImageSize)
-                throw new Exception("Image size cannot exceed 5 MB.");
+                return new FileUploadResult { IsSuccess = false, Message = "Image size cannot exceed 5 MB." };
 
             if (IsDocument(extension) && file.Length > MaxDocumentSize)
-                throw new Exception("Document size cannot exceed 10 MB.");
+                return new FileUploadResult { IsSuccess = false, Message = "Document size cannot exceed 10 MB." };
+
+            return new FileUploadResult { IsSuccess = true };
         }
     }
 }
