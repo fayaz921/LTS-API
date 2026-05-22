@@ -46,9 +46,13 @@ namespace LTS.API.Features.CaseFeature.Mappers
                 DateInstitution: c.DateInstitution,
                 CourtName: c.Court?.CourtName ?? "",
                 DepartmentName: c.Department?.DepartmentName ?? "",
-                Petitioners: c.CasePetitioners
-                                 .Select(cp => cp.Petitioner.Name)
-                                 .ToList()
+                c.CasePetitioners.Select(cp => new PetitionerDetailDto(
+                           cp.Petitioner.Id,
+                           cp.Petitioner.Name,
+                           cp.Petitioner.CNIC,
+                           cp.Petitioner.Email,
+                           cp.Petitioner.Phone
+                       )).ToList()
             );
         }
         public static Case MapToUpdatedCase(this UpdateCaseCommand cmd, Case oldeCase)

@@ -67,7 +67,7 @@ public static class DatabaseExtensions
             await context.Organizations.AddAsync(organization);
         }
 
-        var superAdmin = new User
+        var superAdmin = new User   
         {
             Id = Guid.NewGuid(),
             OrganizationId = organization.Id,

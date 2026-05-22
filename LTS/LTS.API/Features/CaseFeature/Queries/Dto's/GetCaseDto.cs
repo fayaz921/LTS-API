@@ -13,6 +13,14 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
     DateTime DateInstitution,
     string CourtName,
     string DepartmentName,
-    List<string> Petitioners
+    List<PetitionerDetailDto> Petitioners
      );
+
+    public record PetitionerDetailDto(
+       Guid Id,
+       string Name,
+       string? CNIC,
+       string? Email,
+       string? Phone
+   );
 }
