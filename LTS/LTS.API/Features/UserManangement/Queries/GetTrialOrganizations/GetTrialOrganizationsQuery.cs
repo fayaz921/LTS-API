@@ -4,7 +4,9 @@ using MediatR;
 
 namespace LTS.API.Features.UserManangement.Queries.GetTrialOrganizations
 {
-    public class GetTrialOrganizationsQuery : IRequest<ApiResponse<List<OrganizationDto>>>
+    public class GetTrialOrganizationsQuery : IRequest<ApiResponse<PaginatedResponse<OrganizationDto>>>
     {
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 8;
     }
 }

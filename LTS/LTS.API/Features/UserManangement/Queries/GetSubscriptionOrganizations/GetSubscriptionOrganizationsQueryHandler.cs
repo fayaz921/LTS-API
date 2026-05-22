@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Queries.GetSubscriptionOrganizations
 {
-    public class GetSubscriptionOrganizationsQueryHandler : IRequestHandler<GetSubscriptionOrganizationsQuery, ApiResponse<List<OrganizationDto>>>
+    public class GetSubscriptionOrganizationsQueryHandler : IRequestHandler<GetSubscriptionOrganizationsQuery, ApiResponse<PaginatedResponse<OrganizationDto>>>
     {
         private readonly AppDbContext _context;
 
@@ -15,10 +15,17 @@ namespace LTS.API.Features.UserManangement.Queries.GetSubscriptionOrganizations
             _context = context;
         }
 
-        public async Task<ApiResponse<List<OrganizationDto>>> Handle(GetSubscriptionOrganizationsQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<PaginatedResponse<OrganizationDto>>> Handle(GetSubscriptionOrganizationsQuery request, CancellationToken cancellationToken)
         {
-            var orgs = await _context.Organizations
-                .Where(o => o.IsSubscriptionActive == true)
+            var query = _context.Organizations
+                .Where(o => o.IsSubscriptionActive == true);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(o => o.CreatedAt)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .Select(o => new OrganizationDto
                 {
                     Id = o.Id,
@@ -39,7 +46,11 @@ namespace LTS.API.Features.UserManangement.Queries.GetSubscriptionOrganizations
                 })
                 .ToListAsync(cancellationToken);
 
-            return ApiResponse<List<OrganizationDto>>.Ok(orgs, "Subscription organizations fetched successfully");
+            var paginated = PaginatedResponse<OrganizationDto>.Create(
+                items, totalCount, request.PageNumber, request.PageSize);
+
+            return ApiResponse<PaginatedResponse<OrganizationDto>>.Ok(
+                paginated, "Subscription organizations fetched successfully");
         }
     }
 }

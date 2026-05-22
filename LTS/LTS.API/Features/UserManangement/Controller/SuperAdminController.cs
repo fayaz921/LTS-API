@@ -40,16 +40,25 @@ namespace LTS.API.Features.UserManangement.Controller
         }
 
         [HttpGet("trial")]
-        public async Task<IActionResult> GetTrialOrganizations()
+        public async Task<IActionResult> GetTrialOrganizations([FromQuery] int page = 1, [FromQuery] int pageSize = 8)
         {
-            var result = await _mediator.Send(new GetTrialOrganizationsQuery());
+            var result = await _mediator.Send(new GetTrialOrganizationsQuery
+            {
+                PageNumber = page,
+                PageSize = pageSize
+            });
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 
+
         [HttpGet("subscription")]
-        public async Task<IActionResult> GetSubscriptionOrganizations()
+        public async Task<IActionResult> GetSubscriptionOrganizations([FromQuery] int page = 1, [FromQuery] int pageSize = 8)
         {
-            var result = await _mediator.Send(new GetSubscriptionOrganizationsQuery());
+            var result = await _mediator.Send(new GetSubscriptionOrganizationsQuery
+            {
+                PageNumber = page,
+                PageSize = pageSize
+            });
             return result.IsSuccess ? Ok(result) : BadRequest(result);
         }
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Queries.GetTrialOrganizations
 {
-    public class GetTrialOrganizationsQueryHandler : IRequestHandler<GetTrialOrganizationsQuery, ApiResponse<List<OrganizationDto>>>
+    public class GetTrialOrganizationsQueryHandler : IRequestHandler<GetTrialOrganizationsQuery, ApiResponse<PaginatedResponse<OrganizationDto>>>
     {
         private readonly AppDbContext _context;
 
@@ -15,10 +15,17 @@ namespace LTS.API.Features.UserManangement.Queries.GetTrialOrganizations
             _context = context;
         }
 
-        public async Task<ApiResponse<List<OrganizationDto>>> Handle(GetTrialOrganizationsQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<PaginatedResponse<OrganizationDto>>> Handle(GetTrialOrganizationsQuery request, CancellationToken cancellationToken)
         {
-            var orgs = await _context.Organizations
-                .Where(o => o.IsTrialActive == true)
+            var query = _context.Organizations
+                 .Where(o => o.IsTrialActive == true);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var items = await query
+                .OrderBy(o => o.CreatedAt)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .Select(o => new OrganizationDto
                 {
                     Id = o.Id,
@@ -39,7 +46,11 @@ namespace LTS.API.Features.UserManangement.Queries.GetTrialOrganizations
                 })
                 .ToListAsync(cancellationToken);
 
-            return ApiResponse<List<OrganizationDto>>.Ok(orgs, "Trial organizations fetched successfully");
+            var paginated = PaginatedResponse<OrganizationDto>.Create(
+                items, totalCount, request.PageNumber, request.PageSize);
+
+            return ApiResponse<PaginatedResponse<OrganizationDto>>.Ok(
+                paginated, "Trial organizations fetched successfully");
         }
     }
 }
