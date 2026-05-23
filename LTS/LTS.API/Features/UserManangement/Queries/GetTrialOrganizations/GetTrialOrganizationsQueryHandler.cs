@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Queries.GetTrialOrganizations
 {
-    public class GetTrialOrganizationsQueryHandler : IRequestHandler<GetTrialOrganizationsQuery, ApiResponse<PaginatedResponse<OrganizationDto>>>
+    public sealed class GetTrialOrganizationsQueryHandler : IRequestHandler<GetTrialOrganizationsQuery, ApiResponse<PaginatedResponse<OrganizationDto>>>
     {
         private readonly AppDbContext _context;
 
@@ -18,7 +18,8 @@ namespace LTS.API.Features.UserManangement.Queries.GetTrialOrganizations
         public async Task<ApiResponse<PaginatedResponse<OrganizationDto>>> Handle(GetTrialOrganizationsQuery request, CancellationToken cancellationToken)
         {
             var query = _context.Organizations
-                 .Where(o => o.IsTrialActive == true);
+            .AsNoTracking()
+            .Where(o => o.IsTrialActive);
 
             var totalCount = await query.CountAsync(cancellationToken);
 
@@ -35,7 +36,7 @@ namespace LTS.API.Features.UserManangement.Queries.GetTrialOrganizations
                     IsActive = o.IsActive,
                     MaxUsers = o.MaxUsers,
                     MaxClients = o.MaxClients,
-                    CurrentUserCount = o.Users.Count,
+                    CurrentUserCount = o.Users.Count(),
                     IsTrialActive = o.IsTrialActive,
                     TrialStartDate = o.TrialStartDate,
                     TrialEndDate = o.TrialEndDate,

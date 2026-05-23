@@ -7,8 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Queries.GetDashboardStats
 {
-    public class GetDashboardStatsHandler : IRequestHandler<GetDashboardStatsQuery,
-ApiResponse<DashboardStatsDto>>
+    public sealed class GetDashboardStatsHandler : IRequestHandler<GetDashboardStatsQuery,ApiResponse<DashboardStatsDto>>
     {
         private readonly AppDbContext _context;
         public GetDashboardStatsHandler(AppDbContext context)
@@ -20,42 +19,35 @@ ApiResponse<DashboardStatsDto>>
             var now = DateTime.UtcNow;
             var next3Days = now.AddDays(3);
 
-            var totalOrganizations = await _context.Organizations
-                .CountAsync(cancellationToken);
+            var stats = await _context.Organizations
+             .AsNoTracking()
+             .GroupBy(_ => 1)
+             .Select(g => new DashboardStatsDto
+             {
+                 TotalOrganizations = g.Count(),
 
-            var activeTrials = await _context.Organizations
-                .CountAsync(o => o.IsTrialActive && o.TrialEndDate >= now, cancellationToken);
+                 ActiveTrials = g.Count(o =>
+                     o.IsTrialActive && o.TrialEndDate >= now),
 
-            var expiringIn3Days = await _context.Organizations
-                .CountAsync(o => o.IsTrialActive && o.TrialEndDate >= now && o.TrialEndDate <= next3Days, cancellationToken);
+                 ExpiringIn3Days = g.Count(o =>
+                     o.IsTrialActive &&
+                     o.TrialEndDate >= now &&
+                     o.TrialEndDate <= next3Days),
 
-            var paidSubscriptions = await _context.Organizations
-                .CountAsync(o => o.IsSubscriptionActive && o.SubscriptionEndDate >= now, cancellationToken);
+                 PaidSubscriptions = g.Count(o =>
+                     o.IsSubscriptionActive &&
+                     o.SubscriptionEndDate >= now),
 
-            var subscribedOrganizations = await _context.Organizations
-                .Where(o => o.IsSubscriptionActive && o.SubscriptionEndDate >= now)
-                .ToListAsync(cancellationToken);
-
-            decimal totalRevenue = 0;
-            foreach (var org in subscribedOrganizations)
-            {
-                totalRevenue += org.Plan switch
-                {
-                    Domain.Enums.SubscriptionPlan.Basic => 5000,
-                    Domain.Enums.SubscriptionPlan.Pro => 10000,
-                    Domain.Enums.SubscriptionPlan.Enterprise => 20000,
-                    _ => 0
-                };
-            }
-
-            var dto = SuperAdminMapper.ToDashboardStatsDto(
-                totalOrganizations,
-                activeTrials,
-                expiringIn3Days,
-                paidSubscriptions,
-                totalRevenue);
-
-            return ApiResponse<DashboardStatsDto>.Ok(dto, "Dashboard stats fetched successfully");
+                 TotalRevenue = g
+                     .Where(o => o.IsSubscriptionActive && o.SubscriptionEndDate >= now)
+                     .Sum(o => o.Plan == Domain.Enums.SubscriptionPlan.Basic ? 5000m
+                             : o.Plan == Domain.Enums.SubscriptionPlan.Pro ? 10000m
+                             : o.Plan == Domain.Enums.SubscriptionPlan.Enterprise ? 20000m
+                             : 0m)
+             })
+             .FirstOrDefaultAsync(cancellationToken);
+            stats ??= new DashboardStatsDto();
+            return ApiResponse<DashboardStatsDto>.Ok( stats,"Dashboard stats fetched successfully");
         }
     }
 }

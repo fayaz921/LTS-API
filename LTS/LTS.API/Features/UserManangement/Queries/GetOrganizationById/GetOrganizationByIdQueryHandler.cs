@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.UserManangement.Queries.GetOrganizationById
 {
-    public class GetOrganizationByIdQueryHandler : IRequestHandler<GetOrganizationByIdQuery, ApiResponse<OrganizationDto>>
+    public sealed class GetOrganizationByIdQueryHandler : IRequestHandler<GetOrganizationByIdQuery, ApiResponse<OrganizationDto>>
     {
         private readonly AppDbContext _context;
 
@@ -17,7 +17,8 @@ namespace LTS.API.Features.UserManangement.Queries.GetOrganizationById
 
         public async Task<ApiResponse<OrganizationDto>> Handle(GetOrganizationByIdQuery request, CancellationToken cancellationToken)
         {
-            var org = await _context.Organizations
+            var organization = await _context.Organizations
+                .AsNoTracking()
                 .Where(o => o.Id == request.OrganizationId)
                 .Select(o => new OrganizationDto
                 {
@@ -28,7 +29,7 @@ namespace LTS.API.Features.UserManangement.Queries.GetOrganizationById
                     IsActive = o.IsActive,
                     MaxUsers = o.MaxUsers,
                     MaxClients = o.MaxClients,
-                    CurrentUserCount = o.Users.Count,
+                    CurrentUserCount = o.Users.Count(),
                     IsTrialActive = o.IsTrialActive,
                     TrialStartDate = o.TrialStartDate,
                     TrialEndDate = o.TrialEndDate,
@@ -39,10 +40,10 @@ namespace LTS.API.Features.UserManangement.Queries.GetOrganizationById
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (org is null)
+            if (organization is null)
                 return ApiResponse<OrganizationDto>.Fail("Organization not found");
 
-            return ApiResponse<OrganizationDto>.Ok(org, "Organization fetched successfully");
+            return ApiResponse<OrganizationDto>.Ok(organization, "Organization fetched successfully");
         }
     }
 }

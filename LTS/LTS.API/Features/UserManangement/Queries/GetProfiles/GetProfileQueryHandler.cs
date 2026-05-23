@@ -7,14 +7,14 @@ using System.Security.Claims;
 
 namespace LTS.API.Features.UserManangement.Queries.GetProfiles
 {
-    public class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, ApiResponse<GetProfileDto>>
+    public sealed class GetProfileQueryHandler : IRequestHandler<GetProfileQuery, ApiResponse<GetProfileDto>>
     {
-        private readonly AppDbContext _db;
+        private readonly AppDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public GetProfileQueryHandler(AppDbContext db, IHttpContextAccessor httpContextAccessor)
         {
-            _db = db;
+            _context = db;
             _httpContextAccessor = httpContextAccessor;
         }
         public async Task<ApiResponse<GetProfileDto>> Handle(GetProfileQuery request, CancellationToken cancellationToken)
@@ -22,25 +22,32 @@ namespace LTS.API.Features.UserManangement.Queries.GetProfiles
             var userId = _httpContextAccessor.HttpContext?
                  .User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            if (string.IsNullOrEmpty(userId))
-                return ApiResponse<GetProfileDto>.Fail("Unauthorized");
-
-            var user = await _db.Users
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId), cancellationToken);
-
-            if (user == null)
-                return ApiResponse<GetProfileDto>.Fail("User not found");
-
-            return ApiResponse<GetProfileDto>.Ok(new GetProfileDto
+            if (!Guid.TryParse(userId, out var parsedUserId))
             {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                Phone = user.Phonenumber,
-                Location = user.Location,
-                ProfilePictureUrl = user.ProfileImageUrl,
-                JoinedAt = user.CreatedAt,
-            });
+                return ApiResponse<GetProfileDto>.Fail("Unauthorized");
+            }
+            var profile = await _context.Users
+                         .AsNoTracking()
+                         .Where(x => x.Id == parsedUserId)
+                         .Select(x => new GetProfileDto
+                         {
+                             Id = x.Id,
+                             Name = x.Name,
+                             Email = x.Email,
+                             Phone = x.Phonenumber,
+                             Location = x.Location,
+                             ProfilePictureUrl = x.ProfileImageUrl,
+                             JoinedAt = x.CreatedAt
+                         })
+                         .FirstOrDefaultAsync(cancellationToken);
+            if (profile is null)
+            {
+                return ApiResponse<GetProfileDto>.Fail("User not found");
+            }
+
+            return ApiResponse<GetProfileDto>.Ok(
+                profile,
+                "Profile fetched successfully");
         }
     }
 }
