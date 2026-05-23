@@ -7,44 +7,44 @@ using System.Security.Claims;
 
 namespace LTS.API.Features.UserManangement.Queries.GetMe
 {
-    public class GetMeQueryHandler : IRequestHandler<GetMeQuery, ApiResponse<GetMeDto>>
+    public sealed class GetMeQueryHandler : IRequestHandler<GetMeQuery, ApiResponse<GetMeDto>>
     {
-        private readonly ILogger<GetMeQueryHandler> _logger;
-        private readonly AppDbContext _db;
+        private readonly AppDbContext _context;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public GetMeQueryHandler(ILogger<GetMeQueryHandler> logger, AppDbContext db, IHttpContextAccessor httpContextAccessor)
+        public GetMeQueryHandler(AppDbContext db, IHttpContextAccessor httpContextAccessor)
         {
-            _logger = logger;
-            _db = db;
+            _context = db;
             _httpContextAccessor = httpContextAccessor;
         }
         public async Task<ApiResponse<GetMeDto>> Handle(GetMeQuery request, CancellationToken cancellationToken)
         {
             var userId = _httpContextAccessor.HttpContext?
                 .User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (string.IsNullOrEmpty(userId))
+            if (!Guid.TryParse(userId, out var parsedUserId))
                 return ApiResponse<GetMeDto>.Fail("Unauthorized");
 
-            var user = await _db.Users
-                .Include(u => u.Organization)
-                .FirstOrDefaultAsync(u => u.Id == Guid.Parse(userId), cancellationToken);
+            var user = await _context.Users
+           .AsNoTracking()
+           .Where(u => u.Id == parsedUserId)
+           .Select(u => new GetMeDto
+           {
+               Id = u.Id,
+               Name = u.Name,
+               Email = u.Email,
+               ProfileImage = u.ProfileImageUrl,
+               OrganizationId = u.OrganizationId,
+               OrganizationName = u.Organization.OrganizationName,  // no Include needed
+               Role = u.Role.ToString(),
+               OrganizationPlan = u.Organization.Plan.ToString(),
+           })
+           .FirstOrDefaultAsync(cancellationToken);
+
 
             if (user == null)
                 return ApiResponse<GetMeDto>.Fail("User not found");
 
-            return ApiResponse<GetMeDto>.Ok(new GetMeDto
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Email = user.Email,
-                ProfileImage = user.ProfileImageUrl,
-                OrganizationId = user.OrganizationId,
-                OrganizationName = user.Organization.OrganizationName,
-                Role = user.Role.ToString(),
-                OrganizationPlan = user.Organization.Plan.ToString(),
-            });
-        
-    }
+            return ApiResponse<GetMeDto>.Ok(user, "User fetched successfully");
+
+        }
     }
 }
