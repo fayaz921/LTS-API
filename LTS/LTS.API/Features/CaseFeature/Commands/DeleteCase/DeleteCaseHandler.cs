@@ -19,7 +19,7 @@ namespace LTS.API.Features.CaseFeature.Commands.DeleteCase
         {
             var caseInfo = await _context.Cases.Where(x => x.Id == request.CaseId).FirstOrDefaultAsync(ct);
             if (caseInfo == null)
-                return ApiResponse<string>.Fail("Case mot foumd");
+                return ApiResponse<string>.Fail("Case not found.", HttpStatusCode.NotFound);
 
             _context.Cases.Remove(caseInfo);
             return await _context.SaveChangesAsync(ct) > 0 ? ApiResponse<string>.Ok(default!, "Case Deleted Succesfuly !") : ApiResponse<string>.Fail("Server Error !", HttpStatusCode.InternalServerError);

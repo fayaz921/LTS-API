@@ -83,7 +83,8 @@ namespace LTS.API.Features.CaseFeature
                 PageSize = pageSize,
                 Status = status,
                 DateFrom = string.IsNullOrEmpty(fromDate) ? null : DateTime.Parse(fromDate),
-                DateTo = string.IsNullOrEmpty(toDate) ? null : DateTime.Parse(toDate)
+                DateTo = string.IsNullOrEmpty(toDate) ? null : DateTime.Parse(toDate),
+                OrganizationId= Guid.Parse(User.FindFirst("OrganizationId")?.Value!)
             };
 
             var result = await _mediator.Send(searchQuery);

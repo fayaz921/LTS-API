@@ -15,7 +15,7 @@ namespace LTS.API.Features.CaseFeature.Commands.UpdateCase
         {
             var caseInfo = await _context.Cases.Where(x => x.Id == request.Id).FirstOrDefaultAsync(ct);
             if (caseInfo == null)
-                return ApiResponse<string>.Fail("Case mot foumd");
+                return ApiResponse<string>.Fail("Case not found.", HttpStatusCode.NotFound);
 
             _context.Cases.Update(request.MapToUpdatedCase(caseInfo));
             return await _context.SaveChangesAsync(ct) > 0 ? ApiResponse<string>.Ok(default!, "Case Data Updated Succesfuly !") : ApiResponse<string>.Fail("Server Error !", HttpStatusCode.InternalServerError);

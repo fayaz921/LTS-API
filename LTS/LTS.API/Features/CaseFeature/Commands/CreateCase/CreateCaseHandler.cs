@@ -39,8 +39,8 @@ namespace LTS.API.Features.CaseFeature.Commands.CreateCase
             }
             else
             {
-                int lastCaseNo = sequence.LastSequence++;
-                await _context.CaseNumberSequences.ExecuteUpdateAsync(x => x.SetProperty(x => x.LastSequence, lastCaseNo));
+                 sequence.LastSequence++;
+                await _context.CaseNumberSequences.ExecuteUpdateAsync(x => x.SetProperty(x => x.LastSequence, sequence.LastSequence++));
             }
             return $"LTS-{currentYear}-{sequence.LastSequence:D4}";
         }

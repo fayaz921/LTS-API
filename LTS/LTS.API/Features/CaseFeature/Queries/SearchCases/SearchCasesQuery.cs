@@ -14,6 +14,7 @@ namespace LTS.API.Features.CaseFeature.Queries.SearchCases
         public string? Status { get; set; }  
         public DateTime? DateFrom { get; set; }
         public DateTime? DateTo { get; set; }
+
         public Guid OrganizationId { get; set; }
     }
 
