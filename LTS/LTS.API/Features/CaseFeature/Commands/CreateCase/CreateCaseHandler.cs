@@ -14,16 +14,16 @@ namespace LTS.API.Features.CaseFeature.Commands.CreateCase
 
         public async Task<ApiResponse<string>> Handle(CreateCaseCommand request, CancellationToken ct)
         {
-            var newCaseNo = await GenerateCaseNo(request.OrganizationId);
+            var newCaseNo = await GenerateCaseNo(request.OrganizationId, ct);
             var newcase = request.Map(newCaseNo);
             var casePetitioner = request.MapToCasePatitioner(newcase.Id);
             await _context.Cases.AddAsync(newcase, ct);
-            await _context.CasePetitioners.AddAsync(casePetitioner);
+            await _context.CasePetitioners.AddAsync(casePetitioner, ct);
             return await _context.SaveChangesAsync(ct) > 0 ? ApiResponse<string>.Created(default!) :
                                                            ApiResponse<string>.Fail("Internel Server Error!", HttpStatusCode.InternalServerError);
         }
 
-        public async Task<string> GenerateCaseNo(Guid organizationId)
+        public async Task<string> GenerateCaseNo(Guid organizationId, CancellationToken ct)
         {
             var currentYear = DateTime.UtcNow.Year;
             var sequence = await _context.CaseNumberSequences.Where(x => x.Year == currentYear && x.OrganizationId == organizationId).FirstOrDefaultAsync();
@@ -39,9 +39,10 @@ namespace LTS.API.Features.CaseFeature.Commands.CreateCase
             }
             else
             {
-                 sequence.LastSequence++;
-                await _context.CaseNumberSequences.ExecuteUpdateAsync(x => x.SetProperty(x => x.LastSequence, sequence.LastSequence++));
+                sequence.LastSequence++;
+                _context.CaseNumberSequences.Update(sequence);
             }
+            await _context.SaveChangesAsync(ct);
             return $"LTS-{currentYear}-{sequence.LastSequence:D4}";
         }
     }
