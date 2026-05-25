@@ -40,8 +40,8 @@ namespace LTS.API.Features.UserManangement.Queries.GetDashboardStats
 
                  TotalRevenue = g
                      .Where(o => o.IsSubscriptionActive && o.SubscriptionEndDate >= now)
-                     .Sum(o => o.Plan == Domain.Enums.SubscriptionPlan.Basic ? 5000m
-                             : o.Plan == Domain.Enums.SubscriptionPlan.Pro ? 10000m
+                     .Sum(o => o.Plan == Domain.Enums.SubscriptionPlan.Starter ? 5000m
+                             : o.Plan == Domain.Enums.SubscriptionPlan.Professional ? 10000m
                              : o.Plan == Domain.Enums.SubscriptionPlan.Enterprise ? 20000m
                              : 0m)
              })
