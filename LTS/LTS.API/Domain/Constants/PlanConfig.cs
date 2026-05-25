@@ -6,21 +6,21 @@ namespace LTS.API.Domain.Constants
     {
         public static readonly Dictionary<SubscriptionPlan, PlanDetails> Plans = new()
         {
-            [SubscriptionPlan.Free] = new(
+            [SubscriptionPlan.Trial] = new(
                 MaxUsers: 2,
                 MaxPetitioners: 5,
                 MaxCases: 10,
                 Price: 0,
                 DurationDays: 14
             ),
-            [SubscriptionPlan.Basic] = new(
+            [SubscriptionPlan.Starter] = new(
                 MaxUsers: 3,
                 MaxPetitioners: 20,
                 MaxCases: 50,
                 Price: 2500,
                 DurationDays: 30
             ),
-            [SubscriptionPlan.Pro] = new(
+            [SubscriptionPlan.Professional] = new(
                 MaxUsers: 10,
                 MaxPetitioners: int.MaxValue,
                 MaxCases: int.MaxValue,

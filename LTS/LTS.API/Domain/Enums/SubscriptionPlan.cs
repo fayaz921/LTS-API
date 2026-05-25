@@ -2,9 +2,9 @@
 {
     public enum SubscriptionPlan
     {
-        Free,
-        Basic,
-        Pro,
+        Trial,
+        Starter,
+        Professional,
         Enterprise
     }
 }

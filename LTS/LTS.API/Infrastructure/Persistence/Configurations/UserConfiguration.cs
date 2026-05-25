@@ -21,30 +21,50 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(x => x.Email)
             .IsUnique();
 
-        builder.Property(x => x.IsActive)
-            .HasDefaultValue(true);
-
-
         builder.Property(x => x.PasswordHash)
-          .IsRequired();
+            .IsRequired();
 
         builder.Property(x => x.Role)
             .IsRequired()
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.Property(x => x.IsActive)
+            .HasDefaultValue(true);
+
+        builder.Property(x => x.Phonenumber)
+            .IsRequired(false)
+            .HasMaxLength(20);
+
+        builder.Property(x => x.ProfileImageUrl)
+            .IsRequired(false)
+            .HasMaxLength(500);
+
+        builder.Property(x => x.ProfileImagePublicId)
+            .IsRequired(false)
+            .HasMaxLength(200);
+
+        builder.Property(x => x.Location)
+            .IsRequired(false)
+            .HasMaxLength(200);
+
         builder.Property(x => x.Otp)
             .HasMaxLength(10);
 
-        // Base fields
+        builder.Property(x => x.OTPExpiry)
+            .IsRequired(false);
+
+        builder.Property(x => x.LastLoginAt)
+            .IsRequired(false);
+
         builder.Property(x => x.CreatedBy)
             .IsRequired()
             .HasMaxLength(100);
 
         builder.Property(x => x.UpdatedBy)
+            .IsRequired(false)
             .HasMaxLength(100);
 
-       
     }
 }
 

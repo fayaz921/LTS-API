@@ -29,44 +29,65 @@ namespace LTS.API.Features.UserManangement.Controller
         }
         [HttpGet("all")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 5)
+        public async Task<IActionResult> GetAll(
+          [FromQuery] int page = 1,
+          [FromQuery] int pageSize = 10,
+          [FromQuery] string? search = null)
         {
-            var result = await _mediator.Send(new GetAllOrganizationsQuery
-            {
-                PageNumber = page,
-                PageSize = pageSize
-            });
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            var result = await _mediator.Send(new GetAllOrganizationsQuery(page, pageSize, Search: search));
+            return StatusCode((int)result.Status, result);
         }
 
         [HttpGet("trial")]
-        public async Task<IActionResult> GetTrialOrganizations([FromQuery] int page = 1, [FromQuery] int pageSize = 8)
+        [AllowAnonymous]
+        public async Task<IActionResult> GetTrialOrganizations(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null)
         {
-            var result = await _mediator.Send(new GetTrialOrganizationsQuery
-            {
-                PageNumber = page,
-                PageSize = pageSize
-            });
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            var result = await _mediator.Send(new GetAllOrganizationsQuery(page, pageSize, Search: search, IsTrialActive: true));
+            return StatusCode((int)result.Status, result);
         }
 
-
-        [HttpGet("subscription")]
-        public async Task<IActionResult> GetSubscriptionOrganizations([FromQuery] int page = 1, [FromQuery] int pageSize = 8)
+        [HttpGet("subscribed")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetSubscribedOrganizations(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null)
         {
-            var result = await _mediator.Send(new GetSubscriptionOrganizationsQuery
-            {
-                PageNumber = page,
-                PageSize = pageSize
-            });
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            var result = await _mediator.Send(new GetAllOrganizationsQuery(page, pageSize, Search: search, IsSubscriptionActive: true));
+            return StatusCode((int)result.Status, result);
+        }
+
+        [HttpGet("blocked")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetBlockedOrganizations(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null)
+        {
+            var result = await _mediator.Send(new GetAllOrganizationsQuery(page, pageSize, Search: search, IsBlocked: true));
+            return StatusCode((int)result.Status, result);
+        }
+
+        [HttpGet("expired")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetExpiredOrganizations(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? search = null)
+        {
+            var result = await _mediator.Send(new GetAllOrganizationsQuery(page, pageSize, Search: search, IsSubscriptionActive: false, IsActive: false));
+            return StatusCode((int)result.Status, result);
         }
 
         [HttpGet("{id:guid}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(Guid id)
         {
             var result = await _mediator.Send(new GetOrganizationByIdQuery { OrganizationId = id });
-            return result.IsSuccess ? Ok(result) : BadRequest(result);
+            return StatusCode((int)result.Status, result);
         }
     }
 }

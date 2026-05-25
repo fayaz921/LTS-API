@@ -1,23 +1,26 @@
-﻿using LTS.API.Domain.Enums;
-
-namespace LTS.API.Domain.Entities
+﻿namespace LTS.API.Features.Payments.DTOs
 {
-    public class PaymentRequest:BaseEntity
+    public class PaymentRequestDto
     {
-        public SubscriptionPlan RequestedPlan { get; set; }
+        public Guid Id { get; set; }
+        public Guid OrganizationId { get; set; }
+        public string OrganizationName { get; set; } = string.Empty;
+
+        public string RequestedPlan { get; set; } = string.Empty;
         public string TransactionId { get; set; } = string.Empty;
         public string SenderName { get; set; } = string.Empty;
         public string SenderPhone { get; set; } = string.Empty;
-        public PaymentMethod PaymentMethod { get; set; }
+        public string PaymentMethod { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public string ScreenshotUrl { get; set; } = string.Empty;
-        public string ScreenshotPublicId { get; set; } = string.Empty;
-        public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
+
+        public string Status { get; set; } = string.Empty;
         public string? RejectionReason { get; set; }
+
         public DateTime SubmittedAt { get; set; }
         public DateTime? ReviewedAt { get; set; }
         public string? ReviewedBy { get; set; }
 
-        public Organization Organization { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace LTS.API.Features.UserManangement.Mappers
                 Id = Guid.NewGuid(),
                 OrganizationName = organizationName,
                 Slug = organizationName.ToLower().Trim().Replace(" ", "-"),
-                Plan = SubscriptionPlan.Free,
+                Plan = SubscriptionPlan.Trial,
 
                 IsTrialActive = true,
                 TrialStartDate = null,
@@ -21,10 +21,12 @@ namespace LTS.API.Features.UserManangement.Mappers
 
                 // OTP verify hone ke baad true hoga
                 IsActive = false,
+                IsBlocked = false,
 
                 // Trial limits
                 MaxUsers = 0,
-                MaxClients = 0,
+                MaxPetitioners = 0,
+                MaxCases = 0,
 
                 CreatedAt = DateTime.UtcNow,
             };

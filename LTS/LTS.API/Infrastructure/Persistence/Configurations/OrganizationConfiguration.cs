@@ -26,54 +26,56 @@ namespace LTS.API.Infrastructure.Persistence.Configurations
                 .HasConversion<string>()
                 .HasMaxLength(20);
 
-            // Trial fields
-            builder.Property(x => x.TrialStartDate)
-                .IsRequired(false);
-
-            builder.Property(x => x.TrialEndDate)
-                .IsRequired(false);
-
+            // Trial
+            builder.Property(x => x.TrialStartDate).IsRequired(false);
+            builder.Property(x => x.TrialEndDate).IsRequired(false);
             builder.Property(x => x.IsTrialActive)
                 .IsRequired()
                 .HasDefaultValue(false);
 
-            // Subscription fields
-            builder.Property(x => x.SubscriptionStartDate)
-                .IsRequired(false);
-
-            builder.Property(x => x.SubscriptionEndDate)
-                .IsRequired(false);
-
+            // Subscription
+            builder.Property(x => x.SubscriptionStartDate).IsRequired(false);
+            builder.Property(x => x.SubscriptionEndDate).IsRequired(false);
             builder.Property(x => x.IsSubscriptionActive)
                 .IsRequired()
                 .HasDefaultValue(false);
 
-            // Status
             builder.Property(x => x.IsActive)
                 .IsRequired()
                 .HasDefaultValue(false);
 
-            // Limits
+            builder.Property(x => x.IsBlocked)       
+                .IsRequired()
+                .HasDefaultValue(false);
+
             builder.Property(x => x.MaxUsers)
                 .IsRequired()
                 .HasDefaultValue(2);
 
-            builder.Property(x => x.MaxClients)
+            builder.Property(x => x.MaxPetitioners)
                 .IsRequired()
                 .HasDefaultValue(5);
 
-            // Audit
-            builder.Property(x => x.CreatedAt)
-                .IsRequired();
+            builder.Property(x => x.MaxCases)
+                .IsRequired()
+                .HasDefaultValue(10);             
+            builder.Property(x => x.CreatedAt).IsRequired();
+            builder.Property(x => x.UpdatedAt).IsRequired(false);
 
-            builder.Property(x => x.UpdatedAt)
-                .IsRequired(false);
-
-            // Relationship
             builder.HasMany(x => x.Users)
                 .WithOne(x => x.Organization)
                 .HasForeignKey(x => x.OrganizationId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.PaymentRequests)
+                .WithOne(x => x.Organization)
+                .HasForeignKey(x => x.OrganizationId)
+                .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(x => x.WalletTransactions)
+               .WithOne()
+               .HasForeignKey(x => x.OrganizationId)
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

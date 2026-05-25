@@ -20,6 +20,8 @@ namespace LTS.API.Infrastructure.Persistence
         public DbSet<CaseDocument> CaseDocuments => Set<CaseDocument>();
         public DbSet<User> Users => Set<User>();
         public DbSet<Organization> Organizations => Set<Organization>();
+        public DbSet<PaymentRequest> PaymentRequests => Set<PaymentRequest>();
+        public DbSet<WalletTransaction> WalletTransactions => Set<WalletTransaction>();
         public DbSet<CaseNumberSequence> CaseNumberSequences => Set<CaseNumberSequence>();
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

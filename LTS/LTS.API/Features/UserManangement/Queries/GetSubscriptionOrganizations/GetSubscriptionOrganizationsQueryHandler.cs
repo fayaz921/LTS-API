@@ -35,7 +35,7 @@ namespace LTS.API.Features.UserManangement.Queries.GetSubscriptionOrganizations
                     Plan = o.Plan.ToString(),
                     IsActive = o.IsActive,
                     MaxUsers = o.MaxUsers,
-                    MaxClients = o.MaxClients,
+                    //MaxClients = o.MaxClients,
                     CurrentUserCount = o.Users.Count(),
                     IsTrialActive = o.IsTrialActive,
                     TrialStartDate = o.TrialStartDate,
