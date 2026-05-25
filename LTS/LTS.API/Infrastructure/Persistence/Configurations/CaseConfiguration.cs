@@ -14,8 +14,7 @@ namespace LTS.API.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(50);
 
-            builder.HasIndex(x => x.CaseNo)
-                .IsUnique();
+            builder.HasIndex(x => new { x.OrganizationId, x.CaseNo }).IsUnique();
 
             builder.Property(x => x.DAG)
                 .IsRequired()

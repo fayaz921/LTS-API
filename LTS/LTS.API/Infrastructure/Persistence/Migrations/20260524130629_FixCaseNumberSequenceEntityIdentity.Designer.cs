@@ -3,6 +3,7 @@ using System;
 using LTS.API.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LTS.API.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260524130629_FixCaseNumberSequenceEntityIdentity")]
+    partial class FixCaseNumberSequenceEntityIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,12 +127,12 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CaseNo")
+                        .IsUnique();
+
                     b.HasIndex("CourtId");
 
                     b.HasIndex("DepartmentId");
-
-                    b.HasIndex("OrganizationId", "CaseNo")
-                        .IsUnique();
 
                     b.ToTable("Cases");
                 });
@@ -358,11 +361,6 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<bool>("IsBlocked")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false);
-
                     b.Property<bool>("IsSubscriptionActive")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
@@ -373,12 +371,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false);
 
-                    b.Property<int>("MaxCases")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(10);
-
-                    b.Property<int>("MaxPetitioners")
+                    b.Property<int>("MaxClients")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValue(5);
@@ -424,96 +417,6 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Organizations");
-                });
-
-            modelBuilder.Entity("LTS.API.Domain.Entities.PaymentRequest", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<Guid>("OrganizationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("PaymentMethod")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("RejectionReason")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("RequestedPlan")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<DateTime?>("ReviewedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ReviewedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("ScreenshotPublicId")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.Property<string>("ScreenshotUrl")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("SenderName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("SenderPhone")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasDefaultValue("Pending");
-
-                    b.Property<DateTime>("SubmittedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("TransactionId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("PaymentRequests");
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Petitioner", b =>
@@ -633,8 +536,8 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Location")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -657,16 +560,15 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Phonenumber")
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
+                        .HasColumnType("text");
 
                     b.Property<string>("ProfileImagePublicId")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("ProfileImageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -688,48 +590,6 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.HasIndex("OrganizationId");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("LTS.API.Domain.Entities.WalletTransaction", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)");
-
-                    b.Property<Guid?>("OrganizationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("PaymentRequestId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("RecordedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.HasIndex("PaymentRequestId");
-
-                    b.ToTable("WalletTransactions");
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Bench", b =>
@@ -803,17 +663,6 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                     b.Navigation("Case");
                 });
 
-            modelBuilder.Entity("LTS.API.Domain.Entities.PaymentRequest", b =>
-                {
-                    b.HasOne("LTS.API.Domain.Entities.Organization", "Organization")
-                        .WithMany("PaymentRequests")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Organization");
-                });
-
             modelBuilder.Entity("LTS.API.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("LTS.API.Domain.Entities.User", "User")
@@ -834,21 +683,6 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Organization");
-                });
-
-            modelBuilder.Entity("LTS.API.Domain.Entities.WalletTransaction", b =>
-                {
-                    b.HasOne("LTS.API.Domain.Entities.Organization", null)
-                        .WithMany("WalletTransactions")
-                        .HasForeignKey("OrganizationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("LTS.API.Domain.Entities.PaymentRequest", "PaymentRequest")
-                        .WithMany()
-                        .HasForeignKey("PaymentRequestId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("PaymentRequest");
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Case", b =>
@@ -874,11 +708,7 @@ namespace LTS.API.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Organization", b =>
                 {
-                    b.Navigation("PaymentRequests");
-
                     b.Navigation("Users");
-
-                    b.Navigation("WalletTransactions");
                 });
 
             modelBuilder.Entity("LTS.API.Domain.Entities.Petitioner", b =>
