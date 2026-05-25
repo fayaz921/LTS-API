@@ -5,6 +5,7 @@ using LTS.API.Features.Bench.Queries.GetBenchByCase;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using LTS.API.Features.Benchs.Queries.GetAllBenchByCase;
 
 namespace LTS.API.Features.Benchs.Controllers;
 
@@ -49,5 +50,14 @@ public class BenchController : ControllerBase
     {
         var response = await _mediator.Send(new GetBenchByCaseQuery (caseId ));
         return StatusCode((int)response.Status, response);
+    }
+
+    [HttpGet("getAll")]
+    public async Task<IActionResult> GetAllBenches(
+    [FromQuery] GetAllBenchByCaseQuery request,
+    CancellationToken ct)
+    {
+        var result = await _mediator.Send(request, ct);
+        return StatusCode((int)result.Status, result);
     }
 }
