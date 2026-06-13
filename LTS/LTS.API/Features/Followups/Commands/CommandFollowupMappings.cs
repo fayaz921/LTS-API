@@ -1,4 +1,5 @@
-﻿using LTS.API.Domain.Entities;
+﻿using LTS.API.Common;
+using LTS.API.Domain.Entities;
 using LTS.API.Features.Followups.Commands.CreateFollowup;
 
 namespace LTS.API.Features.Followups.Commands
@@ -11,8 +12,8 @@ namespace LTS.API.Features.Followups.Commands
             {
                 Id = Guid.NewGuid(),
                 CaseId = command.CaseId,
-                HearingDate = DateTime.SpecifyKind(command.HearingDate, DateTimeKind.Utc),
-                NextHearingDate = command.NextHearingDate.HasValue ? DateTime.SpecifyKind(command.NextHearingDate.Value, DateTimeKind.Utc) : null,
+                HearingDate = command.HearingDate.ToUtc(),
+                NextHearingDate =command.NextHearingDate.ToUtc(),
                 InterimOrder = command.InterimOrder,
                 Decision = command.Decision,
                 Remarks = command.Remarks,

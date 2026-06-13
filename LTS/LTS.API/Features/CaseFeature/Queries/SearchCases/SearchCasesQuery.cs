@@ -4,11 +4,11 @@ using MediatR;
 
 namespace LTS.API.Features.CaseFeature.Queries.SearchCases
 {
-    public class SearchCasesQuery : IRequest<ApiResponse<PagedResult<GetCaseDto>>>
+    public class SearchCasesQuery : IRequest<ApiResponse<CasesPaginatedResult<GetCaseDto>>>
     {
         public string? SearchTerm { get; set; }   
         public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; } = 20;
+        public int PageSize { get; set; } = 5;
 
         // Filters (optional)
         public string? Status { get; set; }  

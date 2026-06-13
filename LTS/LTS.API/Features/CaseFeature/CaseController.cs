@@ -18,6 +18,7 @@ namespace LTS.API.Features.CaseFeature
         [HttpPost("Create")]
         public async Task<IActionResult> CreateCase(CreateCaseCommand request, CancellationToken ct)
         {
+            request.OrganizationId = Guid.Parse(User.FindFirst("OrganizationId")?.Value!);
             var result = await _mediator.Send(request, ct);
             return StatusCode((int)result.Status, result);
         }
