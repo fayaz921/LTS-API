@@ -1,6 +1,7 @@
 ﻿using CloudinaryDotNet.Core;
 using LTS.API.Common.Response;
 using LTS.API.Domain.Entities;
+using LTS.API.Domain.Enums;
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -8,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 namespace LTS.API.Features.CaseFeature.Queries.GetCases
 {
     public class GetCasesHandler(AppDbContext context)
-        : IRequestHandler<GetAllCasesQuery, ApiResponse<PagedResult<GetCaseDto>>>
+        : IRequestHandler<GetAllCasesQuery, ApiResponse<CasesPaginatedResult<GetCaseDto>>>
     {
         private readonly AppDbContext _context = context;
 
-        public async Task<ApiResponse<PagedResult<GetCaseDto>>> Handle(
+        public async Task<ApiResponse<CasesPaginatedResult<GetCaseDto>>> Handle(
             GetAllCasesQuery request, CancellationToken ct)
         {
             try
@@ -21,15 +22,18 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
 
                 var totalCount = await query.CountAsync(ct);
                 if (totalCount == 0)
-                    return ApiResponse<PagedResult<GetCaseDto>>.Ok("Case Table is Empty");
+                    return ApiResponse<CasesPaginatedResult<GetCaseDto>>.Ok("Case Table is Empty");
+
+                var pendingCount = await query.CountAsync(c => c.Status == CaseStatus.Pending, ct);
+                var finalizedCount = await query.CountAsync(c => c.Status == CaseStatus.Finalized, ct);
 
                 var cases = await FetchPageAsync(query, request, ct);
 
-                return ApiResponse<PagedResult<GetCaseDto>>.Ok(ToPagedResult(cases, totalCount, request));
+                return ApiResponse<CasesPaginatedResult<GetCaseDto>>.Ok(ToPagedResult(cases, totalCount,pendingCount,finalizedCount, request));
             }
             catch (Exception ex)
             {
-                return ApiResponse<PagedResult<GetCaseDto>>
+                return ApiResponse<CasesPaginatedResult<GetCaseDto>>
                     .Fail($"Internal server error: {ex.Message}");
             }
         }
@@ -69,14 +73,16 @@ namespace LTS.API.Features.CaseFeature.Queries.GetCases
                   
 
 
-        private static PagedResult<GetCaseDto> ToPagedResult(
-            List<GetCaseDto> cases, int totalCount, GetAllCasesQuery request) =>
+        private static CasesPaginatedResult<GetCaseDto> ToPagedResult(
+            List<GetCaseDto> cases, int totalCount,int pendingCount,int finalizedCount,GetAllCasesQuery request) =>
             new()
             {
                 Items = cases,
                 TotalCount = totalCount,
                 PageNumber = request.Page,
-                PageSize = request.PageSize
+                PageSize = request.PageSize,
+                PendingCount=pendingCount,
+                FinalizedCount=finalizedCount
             };
         #endregion
     }

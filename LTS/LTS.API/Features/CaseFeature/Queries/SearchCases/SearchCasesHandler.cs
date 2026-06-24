@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LTS.API.Features.CaseFeature.Queries.SearchCases
 {
-    public class SearchCasesHandler : IRequestHandler<SearchCasesQuery, ApiResponse<PagedResult<GetCaseDto>>>
+    public class SearchCasesHandler : IRequestHandler<SearchCasesQuery, ApiResponse<CasesPaginatedResult<GetCaseDto>>>
     {
         private readonly AppDbContext _context;
 
@@ -16,7 +16,7 @@ namespace LTS.API.Features.CaseFeature.Queries.SearchCases
             _context = context;
         }
 
-        public async Task<ApiResponse<PagedResult<GetCaseDto>>> Handle(SearchCasesQuery request, CancellationToken cancellationToken)
+        public async Task<ApiResponse<CasesPaginatedResult<GetCaseDto>>> Handle(SearchCasesQuery request, CancellationToken cancellationToken)
         {
             try
             {
@@ -90,7 +90,7 @@ namespace LTS.API.Features.CaseFeature.Queries.SearchCases
                          )).ToListAsync(cancellationToken);
 
                 // 8. RETURN PAGED RESPONSE
-                var pagedResponse = new PagedResult<GetCaseDto>
+                var pagedResponse = new CasesPaginatedResult<GetCaseDto>
                 {
                     Items = cases,
                     PageNumber = request.PageNumber,
@@ -98,11 +98,11 @@ namespace LTS.API.Features.CaseFeature.Queries.SearchCases
                     TotalCount = totalCount,
                 };
 
-                return ApiResponse<PagedResult<GetCaseDto>>.Ok(pagedResponse);
+                return ApiResponse<CasesPaginatedResult<GetCaseDto>>.Ok(pagedResponse);
             }
             catch (Exception ex)
             {
-                return ApiResponse<PagedResult<GetCaseDto>>.Fail($"Search failed: {ex.Message}");
+                return ApiResponse<CasesPaginatedResult<GetCaseDto>>.Fail($"Search failed: {ex.Message}");
             }
         }
     }

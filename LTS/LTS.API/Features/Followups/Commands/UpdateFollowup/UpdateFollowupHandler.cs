@@ -1,4 +1,5 @@
-﻿using LTS.API.Common.Response;
+﻿using LTS.API.Common;
+using LTS.API.Common.Response;
 using LTS.API.Infrastructure.Persistence;
 using MediatR;
 
@@ -19,8 +20,8 @@ namespace LTS.API.Features.Followups.Commands.UpdateFollowup
             if (followup is null)
                 return ApiResponse<string>.Fail("Followup not found.");
 
-            followup.HearingDate = request.HearingDate;
-            followup.NextHearingDate = request.NextHearingDate;
+            followup.HearingDate = request.HearingDate.ToUtc();
+            followup.NextHearingDate = request.NextHearingDate.ToUtc();
             followup.InterimOrder = request.InterimOrder;
             followup.Decision = request.Decision;
             followup.Remarks = request.Remarks;
